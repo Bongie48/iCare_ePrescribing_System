@@ -1,0 +1,157 @@
+﻿@model iCare_ePrescribing_System.ViewModels.UserViewModel
+@{
+    Layout = "_MainLayout";
+    string special = "@gmail.com", special1 = "@outlook.com", special2 = "@mandela.ac.za", special3 = "@nompilo.co.za";
+    string name = User.Identity?.Name.ToString();
+    if (name.ToLowerInvariant().Contains(special))
+    {
+        name = name.Replace(special, " ");
+    }
+    else if (name.ToLowerInvariant().Contains(special1))
+    {
+        name = name.Replace(special1, " ");
+    }
+    else if (name.ToLowerInvariant().Contains(special2))
+    {
+        name = name.Replace(special2, " ");
+    }
+    else if (name.ToLowerInvariant().Contains(special3))
+    {
+        name = name.Replace(special3, " ");
+    }
+}
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<aside class="sidebar position-fixed top-0 left-0 overflow-auto h-100 float-left" id="show-side-navigation1">
+    <i class="uil-bars close-aside d-md-none d-lg-none" data-close="show-side-navigation1"></i>
+    <div class="sidebar-header d-flex justify-content-center align-items-center px-3 py-4">
+        <img class="rounded-pill img-fluid"
+             width="65"
+             src=""
+             alt="">
+        <div class="ms-2">
+            <h5 class="fs-6 mb-0">
+                @TempData["FullName"]
+            </h5>
+        </div>
+    </div>
+    <ul class="categories list-unstyled" style="border-bottom: 1px solid #ccc; padding: 10px 0;">
+        <li class="has-dropdown">
+            <i class="fa-solid fa-house"></i><a asp-controller="Dashboard" asp-action="Admin" style="color:black">Home</a>
+        </li>
+        <li class="has-dropdown" style="border-bottom: 1px solid #ccc; padding: 10px 0;">
+            <i class="fa-solid fa-users"></i>
+            <a asp-controller="User" asp-action="AddUser" style="color:black;">Register User</a>
+        </li>
+        <li class="has-dropdown" style="border-bottom: 1px solid #ccc; padding: 10px 0;">
+            <i class="fa-solid fa-users-viewfinder"></i><a asp-controller="User" asp-action="Index" style="color:black;">View Staff Members</a>
+        </li>
+        <li class="has-dropdown" style="border-bottom: 1px solid #ccc; padding: 10px 0;">
+            <i class="fa-solid fa-mortar-pestle"></i>
+            <a asp-controller="Admin" asp-action="MedDosageForm" style="color:black;">Add Dosage Form</a>
+        </li>
+        <li class="has-dropdown" style="border-bottom: 1px solid #ccc; padding: 10px 0;">
+            <i class="fa-solid fa-flask-vial"></i>
+            <a asp-controller="Admin" asp-action="MedIngedients" style="color:black;">Add Ingredients</a>
+        </li>
+        <li class="has-dropdown" style="border-bottom: 1px solid #ccc; padding: 10px 0;">
+            <i class="fa-solid fa-house-medical-flag"></i>
+            <a asp-controller="Admin" asp-action="MedSchedules" style="color:black;">Add Schedule</a>
+        </li>
+        <li class="has-dropdown" style="border-bottom: 1px solid #ccc; padding: 10px 0;">
+            <i class="fa-solid fa-hospital-user"></i>
+            <a asp-controller="Admin" asp-action="Ward" style="color:black;">Ward/Bed management</a>
+        </li>
+        <li class="has-dropdown" style="border-bottom: 1px solid #ccc; padding: 10px 0;">
+            <i class="fa-solid fa-clinic-medical"></i>
+            <a asp-controller="Admin" asp-action="Index" style="color:black;">Day Hospital Details</a>
+        </li>
+        <li class="has-dropdown" style="border-bottom: 1px solid #ccc; padding: 10px 0;">
+            <i class="fa-solid fa-notes-medical"></i>
+            <a asp-controller="Admin" asp-action="ConditionDiagnosis" style="color:black;">Conditions</a>
+        </li>
+        <li class="has-dropdown" style="border-bottom: 1px solid #ccc; padding: 10px 0;">
+            <i class="fa-solid fa-heartbeat"></i>
+            <a asp-controller="Admin" asp-action="VitalRange" style="color:black;">Vital Range</a>
+        </li>
+        <li class="has-dropdown" style="padding: 10px 0;">
+            <i class="fa-solid fa-right-from-bracket"></i><a style="color:black;"> Log Out</a>
+        </li>
+    </ul>
+</aside>
+<section id="wrapper">
+<div class="container mt-3">
+<form class="form-control border-primary" class="row g-3" asp-action="AddUser" style="background-color:whitesmoke">
+    <div class="row jumbotron box8">
+            <div class="col-sm-12 mx-t3 mb-4">
+                <h2 class="text-center text-info">Staff Registration</h2>
+            </div>
+                @if (TempData["ErrorRole"] != null)
+                {
+                    <div class="alert alert-danger">
+                        <strong>Note ! </strong>@TempData["ErrorRole"]
+                    </div>
+                }
+                @if (TempData["Errorusername"] != null)
+                {
+                    <div class="alert alert-danger">
+                        <strong>Note ! </strong>@TempData["Errorusername"]
+                    </div>
+                }
+            <input type="hidden" asp-for="@Model.Id" />
+            <div class="col-sm-6 form-group">
+                <label for="name-f">First Name</label>
+                <input asp-for="@Model.Name" type="text" class="form-control" placeholder="Enter employee first name." required>
+            </div>
+            <div class="col-sm-6 form-group">
+                <label for="name-l">Last name</label>
+                <input asp-for="@Model.Surname" type="text" class="form-control" placeholder="Enter employee surname." required>
+            </div>
+            <div class="col-sm-6 form-group">
+                <label for="email">Email</label>
+                <input asp-for="@Model.Email" type="email" class="form-control" placeholder="Enter your email." required>
+            </div>
+                <div class="col-sm-6 form-group">
+                    <label>Cellphone Number</label>
+                    <input asp-for="@Model.Number" type="number" class="form-control" placeholder="Enter Cellphone Number." minlength="10" maxlength="10" required>
+                </div>
+                <div class="col-sm-6 form-group">
+                    <label>Date Of Birth</label>
+                    <input asp-for="@Model.BirthDate" type="datetime-local" class="form-control" value="@DateTime.Now" required>
+                </div>
+                <div class="col-sm-6 form-group">
+                    <label>Gender</label>
+                    <select asp-for="@Model.Gender" class="form-control browser-default custom-select" required>
+                        <option value="">--Select--</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="unspesified">Do not Specify</option>
+                    </select>
+                </div>
+                <div class="col-sm-6 form-group">
+                    <label>Health Council Registration Number</label>
+                    <input asp-for="@Model.HealthCouncilRegistrationNumber" type="text" class="form-control" placeholder="Enter Health Council Registration Number." minlength="6" maxlength="6" required>
+                </div>
+                @for (var i = 0; i < Model.Roles.Count; i++)
+                {
+                    <div class="col-md-12">
+                        @Html.CheckBoxFor(s=> Model.Roles[i].Selected )
+                        @Html.HiddenFor(s=> Model.Roles[i].Value)
+                        @Html.LabelFor(s=> Model.Roles[i].Selected, Model.Roles[i].Text, new {@class="form-check-label" })
+                        @Html.HiddenFor(s=> Model.Roles[i].Text)
+                    </div>
+                }
+    <span class="text-danger">@ViewBag.Message</span>
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary">Register Employee</button>
+    </div>
+    </div>
+</form>
+</div>
+</section>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    }

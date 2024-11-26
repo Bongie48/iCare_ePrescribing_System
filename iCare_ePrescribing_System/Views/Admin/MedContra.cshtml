@@ -1,0 +1,81 @@
+﻿@model iCare_ePrescribing_System.ViewModels.ContraIndicationVM
+@{
+    Layout = "_MainLayout";
+    var groupedInteractions = Model.MedInteractionsList.GroupBy(x => x.MedicalConditionID).ToList();
+}
+<div class="p-4">
+    <div class="welcome">
+        <div class="content rounded-3 p-3">
+            <h1 class="navbar-brand" href="#"> <span class="main-color">Medication Contra-Indication</span></h1>
+        </div>
+    </div>
+    <br />
+    <form method="post" asp-controller="Admin" asp-action="MedContra" class="form-control border-primary" style="background-color:whitesmoke;">
+        <section class="charts mt-3">
+            <h5>Medication Contra-Indication</h5>
+            <hr />
+            @if (TempData["Message101"] != null)
+            {
+                <div class="alert alert-success">
+                    <strong>Note ! </strong>@TempData["Message101"]
+                </div>
+            }
+
+            <div class="col-sm-6 form-group">
+                <label >Condition</label>
+                <select asp-for="MedInteraction.MedicalConditionID" asp-items="Model.ConditionName" class="form-control custom-select browser-default" required>
+                    <option value="">--Select--</option>
+                </select>
+            </div>
+
+            @for (var i = 0; i < Model.Active.Count; i++)
+            {
+                <div class="form-check">
+                    <input type="checkbox" name="SelectedActiveIngredientIDs" value="@Model.Active[i].Value" class="form-check-input" id="activeIngredient_@i" />
+                    <label class="form-check-label" for="activeIngredient_@i">@Model.Active[i].Text</label>
+                </div>
+            }
+
+
+            <div class="col-md-12">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+
+            <table class="table caption-top">
+                <caption>Added Medication Contra-Indications</caption>
+                <thead>
+                    <tr>
+                        <th>Condition Code</th>
+                        <th>Condition Name</th>
+                        <th>Active Ingredients</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                   
+                    @foreach (var conditionGroup in groupedInteractions)
+                    {
+                        var condition = conditionGroup.First(); 
+                        <tr>
+                            <td>@condition.Condition.ConditionCode</td>
+                            <td>@condition.Condition.ConditionName</td>
+                            <td>
+                                @foreach (var interaction in conditionGroup)
+                                {
+                                    <p>@interaction.ActiveIngredient.ActiveName</p>
+                                }
+                            </td>
+                            <td>
+                                <a class="btn btn-primary" asp-controller="Admin" asp-action="UpdateDosage" asp-route-id="@condition.MedInteractionID">Edit</a>
+                                <a class="btn btn-danger" asp-controller="Admin" asp-action="DosageDelete" asp-route-id="@condition.MedInteractionID">Delete</a>
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+        </section>
+    </form>
+
+</div>
+

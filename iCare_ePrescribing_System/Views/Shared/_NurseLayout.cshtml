@@ -1,0 +1,52 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - iCare_ePrescribing_System</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/iCare_ePrescribing_System.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/SidenavStyle.css" asp-append-version="true" />
+</head>
+<body>
+    <section>
+        <div class="main-container-fluid d-flex">
+            <partial name="_SidenavPartial" />
+            <div class="content">
+                <nav class="navbar navbar-expand-md navbar-light bg-light">
+                    <div class="container-fluid">
+                        <div class="d-flex justify-content-between d-md-none d-block">
+                            <button class="btn px-1 py-0 open-btn me-2"><i class="fal fa-stream"></i></button>
+                            <a class="navbar-brand fs-4" href="#"><span class="bg-dark rounded px-2 py-0 text-white">CL</span></a>
+
+                        </div>
+                        <button class="navbar-toggler p-0 border-0" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                                aria-expanded="false" aria-label="Toggle navigation">
+                            <i class="fal fa-bars"></i>
+                        </button>
+                        <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+                            <ul class="navbar-nav mb-2 mb-lg-0">
+                                <li class="nav-item">
+                                    @*<a class="nav-link active" aria-current="page" href="#">Profile</a>*@
+                                    <partial name="_LoginPartial" />
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
+                <div class="dashboard-content px-3 pt-4">
+                    @RenderBody()
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/SidenavScript.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

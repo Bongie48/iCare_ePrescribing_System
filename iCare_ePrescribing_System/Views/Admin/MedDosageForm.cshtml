@@ -1,0 +1,63 @@
+﻿@model iCare_ePrescribing_System.ViewModels.DosageViewModel
+@{
+    Layout = "_MainLayout";
+}
+<div class="p-4">
+    <div class="welcome">
+        <div class="content rounded-3 p-3">
+            <h1 class="navbar-brand" href="#"> <span class="main-color">Dosage Form</span></h1>
+        </div>
+    </div>
+    <br />
+    <form class="form-control border-primary" class="row g-3" asp-action="MedDosageForm" style="background-color:whitesmoke;">
+        <section class="charts mt-3">
+            <h5>Dosage Form</h5>
+            <hr />
+            @if (TempData["Message1"] != null)
+            {
+                <div class="alert alert-success">
+                    <strong>Note ! </strong>@TempData["Message1"]
+                </div>
+            }
+            <table class="table table-borderless">
+                <thead>
+                    <tr>
+                        <div class="col-sm-6 form-group">
+                            <label for="name-f">Dosage Name</label>
+                            <input type="text" asp-for="@Model.dosage.DosageName" class="form-control" placeholder="Enter dosage form name" required>
+                        </div>
+                    </tr>
+                </thead>
+                <tr>
+                    <td>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </td>
+                </tr>
+            </table>
+            <table class="table caption-top">
+                <caption>Added Dosage Forms</caption>
+                <thead>
+                    <tr>
+                        <td>
+                            Dosage Name
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var x in Model.dosagelist)
+                    {
+                        <tr>
+                            <td>
+                                @x.DosageName
+                            </td>
+                            <td><a class="btn btn-primary" asp-controller="Admin" asp-action="UpdateDosage" asp-route-id="@x.DosageID">Edit</a></td>
+                            
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </section>
+    </form>
+</div>

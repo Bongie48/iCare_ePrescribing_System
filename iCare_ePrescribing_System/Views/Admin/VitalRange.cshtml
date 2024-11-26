@@ -1,0 +1,85 @@
+﻿@model iCare_ePrescribing_System.ViewModels.VitalRangeVM;
+
+@{
+    ViewData["Title"] = "Conditions";
+    Layout = "_MainLayout";
+}
+
+<div class="p-4">
+    <div class="welcome">
+        <div class="content rounded-3 p-3">
+            <h1 class="navbar-brand" href="#"> <span class="main-color">Conditions</span></h1>
+        </div>
+    </div>
+    <br />
+
+    <div style="background-color:whitesmoke;">
+        <form class="form-control border-primary" class="row g-3" asp-controller="Admin" asp-action="VitalRange" method="post" style="background-color:whitesmoke;">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Vitals.Name" class="control-label"></label>
+                <input asp-for="Vitals.Name" class="form-control" />
+                <span asp-validation-for="Vitals.Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Vitals.Lowlimit" class="control-label"></label>
+                <input asp-for="Vitals.Lowlimit" class="form-control" />
+                <span asp-validation-for="Vitals.Lowlimit" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Vitals.Highlimit" class="control-label"></label>
+                <input asp-for="Vitals.Highlimit" class="form-control" />
+                <span asp-validation-for="Vitals.Highlimit" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+            <h3>
+                Vital Ranges
+            </h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Vitals.Name)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Vitals.Lowlimit)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Vitals.Highlimit)
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.VitalsList)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Name)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Lowlimit)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Highlimit)
+                            </td>
+
+                            <td>
+                                <a asp-action="Edit" asp-route-id="@item.VitalId ">Edit</a> |
+                                <a asp-action="Delete" asp-route-id="@item.VitalId">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </form>
+
+
+
+
+    </div>
+</div>

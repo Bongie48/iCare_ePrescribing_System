@@ -1,0 +1,209 @@
+﻿body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(200, 200, 200, 0.4)), url('./BackImageHospital.jpg') no-repeat center center fixed;
+    background-size: cover;
+}
+.wrapper {
+    margin: 20px auto;
+    width: 700px;
+    height: 500px;
+    overflow: hidden;
+    background-color: #FF80AB;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    animation: bgChange 6s ease-in-out alternate infinite;
+    border-radius: 10px;
+}
+
+.header,
+.footer {
+    height: 50px;
+}
+
+.header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    font-family: century gothic;
+}
+
+.logo {
+    width: 30px;
+    margin-left: 15px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.line,
+.line-middle {
+    margin: 0 2px;
+    width: 4px;
+}
+
+.line {
+    height: 20px;
+}
+
+.line-middle {
+    height: 12px;
+}
+
+.heading {
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+}
+
+.fa-bars {
+    margin-right: 15px;
+}
+
+.main {
+    width: 2100px;
+    height: calc(500px - 90px);
+    display: flex;
+}
+
+.home-content {
+    position: absolute;
+    z-index: 5;
+    margin-left: 25px;
+    height: 410px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-family: century gothic;
+    font-size: 40px;
+    text-transform: uppercase;
+}
+
+#home-header-first,
+#home-header-second {
+    letter-spacing: 7px;
+}
+
+#home-header-first {
+    margin-bottom: 0px;
+}
+
+#home-header-second {
+    margin-top: 0px;
+    -webkit-text-fill-color: cornsilk;
+    -webkit-text-stroke-color: navajowhite;
+}
+
+.image-container {
+    width: 700px;
+    height: 415px;
+    display: flex;
+    justify-content: center;
+    position: relative;
+    animation: imageSlide 6s ease-in alternate infinite;
+}
+
+.image {
+    width: 330px;
+    height: 415px;
+    position: absolute;
+}
+
+.footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: century gothic;
+    font-size: 16px;
+}
+
+.footer-heading {
+    margin-left: 25px;
+    letter-spacing: 1.4px;
+    font-weight: bold;
+}
+
+.page-number {
+    width: 16px;
+    height: 20px;
+    margin-right: 25px;
+    overflow: hidden;
+    display: flex;
+}
+
+.number {
+    position: relative;
+    animation: numberChange 6s ease-in alternate infinite;
+}
+
+@keyframes imageSlide {
+    0% {
+        right: 0px;
+    }
+
+    20% {
+        right: 0;
+    }
+
+    40% {
+        right: 700px;
+    }
+
+    60% {
+        right: 700px;
+    }
+
+    80% {
+        right: 1400px;
+    }
+
+    100% {
+        right: 1400px;
+    }
+}
+
+@keyframes bgChange {
+    0% {
+        background-color: #B0C4DE;
+    }
+
+    50% {
+        background-color: #A9A9A9; 
+    }
+
+    100% {
+        background-color: #5F9EA0;
+    }
+}
+
+@keyframes numberChange {
+    0% {
+        right: 0px;
+    }
+
+    20% {
+        right: 0;
+    }
+
+    40% {
+        right: 18px;
+    }
+
+    60% {
+        right: 18px;
+    }
+
+    80% {
+        right: 36px;
+    }
+
+    100% {
+        right: 36px;
+    }
+}
+

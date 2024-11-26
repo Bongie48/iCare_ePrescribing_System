@@ -1,0 +1,101 @@
+﻿@model iCare_ePrescribing_System.ViewModels.OrdersVM
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore;
+@using iCare_ePrescribing_System.Data
+@inject SignInManager<StaffMembers> SignInManager
+@inject UserManager<StaffMembers> UserManager
+@inject ApplicationDbContext context
+@{
+    ViewData["Title"] = "Pharmacist Dashboard";
+    Layout = "PharmaLayout";
+    var user = await UserManager.FindByNameAsync(User.Identity.Name);
+    var prescriptionsitems = context.PrescriptionItem
+    .Include(x => x.medication)
+    .ToList();
+
+}
+<style>
+    .text-muted {
+        color: #6c757d; /* Muted color for less emphasis */
+        font-style: italic; /* Example style */
+    }
+</style>
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<section id="wrapper">
+    <div class="welcome">
+        <div class="content rounded-3 p-3">
+            <h1 class="navbar-brand" href="#"> <span class="main-color">Prescription Visualisation</span></h1>
+        </div>
+    </div>
+    <br />
+<form class="form-control border-primary" asp-controller="Pharma" asp-action="Visual" method="get" style="background-color:whitesmoke;width:auto">
+    <h5 class="text-left">Prescription Visualization</h5>
+    <hr />
+    @if (TempData["error1"] != null)
+    {
+        <div class="alert alert-danger">
+            <strong>Note!</strong> @TempData["error1"]
+        </div>
+    }
+    <label>Date Range</label>
+    <div class="input-group mb-3">
+        <label><b>From:</b>&nbsp;&nbsp;</label>
+        <input type="date" name="startDate" class="form-control" value="@Model.StartDate?.ToString("yyyy-MM-dd")" />
+        <label>&nbsp;<b>To:</b>&nbsp;&nbsp;</label>
+        <input type="date" name="endDate" class="form-control" value="@Model.EndDate?.ToString("yyyy-MM-dd")" />
+        <input class="btn btn-secondary" type="submit" value="Search">&nbsp; &nbsp;
+        <a asp-controller="Pharma" asp-action="Visual" class="btn btn-outline-primary">View All</a>
+    </div>
+
+    <section class="charts mt-4">
+        <h6>Prescription Dispensation Graph</h6>
+        <canvas id="medicationChart" width="400" height="200"></canvas>
+
+        <script>
+            var ctx = document.getElementById('medicationChart').getContext('2d');
+
+            // Prepare data for the graph from the ViewModel
+            var medicationNames = @Html.Raw(Json.Serialize(Model.MedicationTotals.Select(m => m.Key).ToList()));
+            var medicationQuantities = @Html.Raw(Json.Serialize(Model.MedicationTotals.Select(m => m.Value).ToList()));
+
+            var chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: medicationNames,
+                    datasets: [{
+                        label: 'Quantity Dispersed',
+                        data: medicationQuantities,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        </script>
+    </section>
+</form>
+</section>
+<script>
+    <script>
+        $(document).ready(function () {
+            $("#myInput").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $("#myTable tr").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+</script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+

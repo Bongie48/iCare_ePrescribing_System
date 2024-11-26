@@ -1,0 +1,209 @@
+﻿@model iCare_ePrescribing_System.ViewModels.Nurse.ConditionViewModel;
+
+@{
+    ViewData["Title"] = "AddCondition";
+    Layout = "_NursePharmaLayout";
+}
+
+<h2>Select Conditions for @Model.Patient.Name</h2>
+
+<div class="row">
+    <div class="col-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Add Conditions</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="AddCondition" method="post">
+                    <input type="hidden" asp-for="Patient.PatientId" />
+
+                    <div class="form-group">
+                        <label>Select Condition:</label>
+                        <select id="conditionDropdown" class="form-control">
+                            <option value="">-- Select Condition --</option>
+                            @foreach (var condition in Model.Conditions)
+                            {
+                                <option value="@condition.ConditionID">@condition.ConditionName</option>
+                            }
+                        </select>
+                    </div>
+
+                    <button type="button" class="btn btn-secondary" onclick="addCondition()">Add Condition to List</button>
+
+                    <table class="table table-striped mt-3" id="conditionsTable">
+                        <thead>
+                            <tr>
+                                <th>Condition Name</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.PatientConditions.Count; i++)
+                            {
+                                <tr>
+                                    <td>
+                                        @Model.Conditions.FirstOrDefault(c => c.ConditionID == Model.PatientConditions[i].ConditionID)?.ConditionName
+                                        <input type="hidden" asp-for="PatientConditions[@i].ConditionID" />
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-danger" onclick="removeCondition(this)">Remove</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <a class="btn btn-secondary mt-3" asp-action="PatientProfile" asp-route-id="@Model.Patient.PatientId">Profile</a>
+                    <button type="submit" class="btn btn-primary mt-3" asp-action="AddCondition">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let conditionIndex = @Model.PatientConditions.Count;
+
+        // Function to add a condition to the table
+        function addCondition() {
+            let conditionDropdown = document.getElementById("conditionDropdown");
+            let selectedConditionId = conditionDropdown.value;
+            let selectedConditionText = conditionDropdown.options[conditionDropdown.selectedIndex].text;
+
+            if (!selectedConditionId) {
+                alert("Please select a condition.");
+                return;
+            }
+
+            // Check if condition is already in the table
+            let existingCondition = document.querySelector(`input[value='${selectedConditionId}']`);
+            if (existingCondition) {
+                alert("This condition is already selected.");
+                return;
+            }
+
+            let table = document.getElementById("conditionsTable").getElementsByTagName("tbody")[0];
+            let newRow = table.insertRow();
+
+            // Insert the condition name
+            let cell1 = newRow.insertCell(0);
+            cell1.innerHTML = selectedConditionText + `<input type="hidden" name="PatientConditions[${conditionIndex}].ConditionID" value="${selectedConditionId}" />`;
+
+            // Insert the remove button
+            let cell2 = newRow.insertCell(1);
+            cell2.innerHTML = `<button type="button" class="btn btn-danger" onclick="removeCondition(this)">Remove</button>`;
+
+            conditionIndex++;
+            conditionDropdown.value = ""; // Reset dropdown after adding
+        }
+
+        // Function to remove a condition from the table
+        function removeCondition(button) {
+            let row = button.closest('tr');
+            row.remove();
+        }
+    </script>
+}
+
+@* <h2>Select Conditions for @Model.Patient.Name</h2>
+
+<form asp-action="SelectConditions" method="post">
+    <input type="hidden" asp-for="Patient.PatientId" />
+
+    <div id="condition-list">
+        @for (int i = 0; i < Model.PatientConditions.Count; i++)
+        {
+            <div class="form-group">
+                <label>Condition @i:</label>
+                <select class="form-control" asp-for="PatientConditions[@i].ConditionID" asp-items="@(new SelectList(Model.Conditions, "ConditionID", "ConditionName"))">
+                    <option value="">-- Select Condition --</option>
+                </select>
+                <button type="button" class="btn btn-danger" onclick="removeCondition(this)">Remove</button>
+            </div>
+        }
+    </div>
+
+    <button type="button" class="btn btn-secondary" onclick="addCondition()">Add Another Condition</button>
+    <button type="submit" class="btn btn-primary">Save Conditions</button>
+</form>
+
+@section Scripts {
+    <script>
+        let conditionIndex = @Model.PatientConditions.Count;
+
+        function addCondition() {
+            let conditionList = document.getElementById("condition-list");
+
+            let newConditionHtml = `
+                        <div class="form-group">
+                            <label>Condition ${conditionIndex}:</label>
+                            <select class="form-control" name="PatientConditions[${conditionIndex}].ConditionID">
+                                <option value="">-- Select Condition --</option>
+        @foreach (var condition in Model.Conditions)
+        {
+                                        <option value="@condition.ConditionID">@condition.ConditionName</option>
+        }
+                            </select>
+                            <button type="button" class="btn btn-danger" onclick="removeCondition(this)">Remove</button>
+                        </div>
+                    `;
+
+            conditionList.insertAdjacentHTML('beforeend', newConditionHtml);
+            conditionIndex++;
+        }
+
+        function removeCondition(button) {
+            button.closest('.form-group').remove();
+        }
+    </script> 
+}
+*@
+@*
+<h2 class="fs-5"> Conditions</h2>
+
+<div class="row">
+    <div class="col-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Add Conditions</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    <div class="row">
+                        <div class="col">
+                            <label for="exampleFormControlInput1" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Name">
+                        </div>
+                        <div class="col">
+                            <label for="exampleFormControlInput1" class="form-label">Surname</label>
+                            <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Surname">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleFormControlInput1" class="form-label">Condition</label>
+                        <select class="form-select form-select form-label">
+                            <option class="form-label" selected>Name</option>
+                            <option value="1">Diabetes</option>
+                            <option value="2">Covid-19</option>
+                            <option value="3">Inflamation</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleFormControlInput1" class="form-label">Health Category</label>
+                        <select class="form-select form-select form-label">
+                            <option class="form-label" selected>Choose..</option>
+                            <option value="1">Blood</option>
+                            <option value="2">Cardionvascular</option>
+                            <option value="3">Inflamation</option>
+                            <option value="3">Ear</option>
+                            <option value="3">Eye</option>
+                        </select>
+                    </div>
+
+                    <a type="button" class="btn btn-outline-dark" asp-controller="Nurse" asp-action="admitPatient">Back</a>
+                    <button type="submit" class="btn btn-primary" asp-controller="Nurse" asp-action="AddMedication" >Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div> *@

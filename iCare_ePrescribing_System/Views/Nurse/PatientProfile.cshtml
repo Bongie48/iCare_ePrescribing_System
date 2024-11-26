@@ -1,0 +1,343 @@
+﻿@model iCare_ePrescribing_System.ViewModels.Nurse.ProfileViewModel
+
+@{
+    ViewData["Title"] = "Patient Profile";
+    Layout = "_NursePharmaLayout";
+
+    // Retrieve the administered quantities dictionary from ViewData
+    var administeredQuantities = ViewData["AdministeredQuantities"] as Dictionary<int, int>;
+}
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert @(TempData["MessageType"]?.ToString() == "success" ? "alert-success" : "alert-danger") alert-dismissible fade show" role="alert">
+        @TempData["Message"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
+
+<div class="card">
+    <div class="card-body">
+        <div class="container mt-4">
+            <div class="row">
+                <div class="col-12">
+                    <h2 class="text-black">Patient Profile</h2>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <h3 class="text-secondary">Patient Details</h3>
+                    <div class="card p-3 mb-4">
+                        <p><strong>Name:</strong> @Model.Patient.Name</p>
+                        <p><strong>Surname:</strong> @Model.Patient.Surname</p>
+                        <p><strong>ID Number:</strong> @Model.Patient.IDNo</p>
+                        <p><strong>Gender:</strong> @Model.Patient.Gender</p>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <h3 class="text-secondary">Admission</h3>
+                    <div class="card p-3 mb-4">
+                        @if (Model.Admission != null)
+                        {
+                            <p><strong>Admission Date:</strong> @Model.Admission.AdmissionDate.ToString("MMMM dd, yyyy HH:mm")</p>
+                            <p><strong>Status:</strong> @Model.Admission.AdmissionStatus</p>
+                        }
+                        else
+                        {
+                            <p class="text-danger">The patient is currently not admitted.</p>
+                        }
+                    </div>
+
+                    <div class="row mt-3">
+                        @* <div class="col-6">
+                            <a asp-action="GenerateReport" class="btn btn-primary w-100">
+                                Report
+                            </a>
+                        </div> *@
+                        @* <div class="col-12">
+                            <a asp-action="EmailSurgeon" class="btn btn-secondary w-100">
+                                Email Surgeon
+                            </a>
+                        </div> *@
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @*<h3>Allergies</h3>
+        @if (Model.Allergies != null && Model.Allergies.Any())
+        {
+            <ul>
+                @foreach (var allergy in Model.Allergies)
+                {
+                    <li>@allergy.Name - @allergy.ActiveIngredient</li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p>No allergies recorded.</p>
+        } *@
+
+        <h3>Conditions</h3>
+        @if (Model.PatientConditions != null && Model.PatientConditions.Any())
+        {
+            <form method="get">
+                <button type="submit" class="btn btn-dark" asp-action="AddCondition" asp-route-id="@Model.Patient.PatientId">
+                    Add Condition
+                </button>
+            </form>
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Condition Code</th>
+                        <th>Condition Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var condition in Model.PatientConditions)
+                    {
+                        <tr>
+                            <td>@condition.Condition.ConditionCode</td>
+                            <td>@condition.Condition.ConditionName</td>
+
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <form method="get">
+                <button type="submit" class="btn btn-dark" asp-action="AddCondition" asp-route-id="@Model.Patient.PatientId">
+                    Add Condition
+                </button>
+            </form>
+
+            <br />
+            <div class="alert alert-warning text-center">
+                <strong>No Conditions has been Recorded to this patient yet.</strong>
+            </div>
+        }
+
+        <h3>Medications</h3>
+        @if (Model.PatientMedication != null && Model.PatientMedication.Any())
+        {
+            <form method="get">
+                <button type="submit" class="btn btn-dark" asp-action="AddMedication" asp-route-id="@Model.Patient.PatientId">
+                    Add Medication
+                </button>
+            </form>
+
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Medication Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var medication in Model.PatientMedication)
+                    {
+                        <tr>
+                            <td>@medication.Medication.MedicationName</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <form method="get">
+                <button type="submit" class="btn btn-dark" asp-action="AddMedication" asp-route-id="@Model.Patient.PatientId">
+                    Add Medication
+                </button>
+            </form>
+
+            <br />
+            <div class="alert alert-warning text-center">
+                <strong>No Chronic Medication has been Recorded to this patient yet.</strong>
+            </div>
+        }
+
+        <h3>Vitals</h3>
+        @if (Model.PatientVitals != null && Model.PatientVitals.Any())
+        {
+
+            <form method="get">
+                <button type="submit" class="btn btn-dark" asp-action="AddVitals" asp-route-id="@Model.Admission.AdmisionID">
+                    Add Vitals
+                </button>
+            </form>
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Vital Name</th>
+                        <th>Readings</th>
+                        <th>Capture Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var vitals in Model.PatientVitals)
+                    {
+                        <tr>
+                            <td>@vitals.Vitals.Name</td>
+                            <td>@vitals.Readings</td>
+                            <td>@vitals.CaptureTime</td>
+                            <td>
+                                @if (vitals.Status == "Retake")
+                                {
+                                    <a asp-controller="Nurse" asp-action="Retake" asp-route-id="@vitals.PatientVitalsId" class="btn btn-dark">Retake</a>
+                                }
+                                else if (vitals.Status == "Retaken")
+                                {
+                                    <span class="text-success">Retaken Vitals</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <form method="get">
+                <button type="submit" class="btn btn-dark" asp-action="AddVitals" asp-route-id="@Model.Admission.AdmisionID">
+                    Add Vitals
+                </button>
+            </form> 
+            <br />
+            <div class="alert alert-warning text-center">
+                <strong>No Vitals has been Recorded to this patient yet.</strong>
+            </div>
+            
+        }
+
+        <div>
+            <h3>Prescribed Medications</h3>
+            @if (Model.PrescriptionItem != null && Model.PrescriptionItem.Any())
+            {
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Medication</th>
+                            <th>Quantity</th>
+                            <th>Instructions</th>
+                            <th>Administer</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.PrescriptionItem)
+                        {
+                            <tr>
+                                <td>@item.medication.MedicationName</td>
+                                <td>@item.Quantity</td>
+                                <td>@item.instruction</td>
+                                <td>
+                                    <form asp-action="PrescribedMedication" method="get">
+                                        <button type="submit" asp-action="PrescribedMedication" asp-route-id="@item.itemId" class="btn btn-light">Administer</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="alert alert-warning text-center">
+                    <strong>No medication has been Prescribed to this patient yet.</strong>
+                </div>
+            }
+            
+        </div>
+
+        <div class="container mt-5">
+            <h3 class="text-start mb-4">Administered Medication</h3>
+
+            @if (Model.PrescribedMedication != null && Model.PrescribedMedication.Any())
+            {
+                <table class="table table-striped table-hover">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Medication Name</th>
+                            <th>Instructions</th>
+                            <th>Quantity Prescribed</th>
+                            <th>Total Administered</th>
+                            <th>Remaining Quantity</th>
+                            <th>Last Administered</th>
+                            <th>Administer</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.PrescriptionItem)
+                        {
+                            // Get the latest administered medication record
+                            var latestPrescribedMedication = Model.PrescribedMedication.FirstOrDefault(pm => pm.PrescriptionItem.itemId == item.itemId);
+
+                            // Get the total administered quantity for this prescription item
+                            var totalAdministered = administeredQuantities != null && administeredQuantities.ContainsKey(item.itemId)
+                            ? administeredQuantities[item.itemId] : 0;
+
+                            // Calculate the remaining quantity
+                            var remainingQuantity = item.Quantity - totalAdministered;
+
+                            if (totalAdministered > 0)
+                            {
+                                <tr>
+                                    <td>@item.medication.MedicationName</td>
+                                    <td>@item.instruction</td>
+                                    <td>@item.Quantity</td>
+                                    <td>@totalAdministered</td> <!-- Total administered quantity -->
+                                    <td>@(remainingQuantity > 0 ? remainingQuantity : "N/A")</td> <!-- Remaining quantity or "N/A" -->
+                                    <td>@latestPrescribedMedication?.TimeAdministered.ToString("g")</td> <!-- Last administered time -->
+                                    @if (remainingQuantity > 0)
+                                    {
+                                        <td>
+                                            <form asp-action="PrescribedMedication" method="get">
+                                                <button type="submit" asp-action="PrescribedMedication" asp-route-id="@item.itemId" class="btn btn-primary">Administer</button>
+                                            </form>
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td>
+                                            <form asp-action="PrescribedMedication" method="get">
+                                                <button type="submit" asp-action="PrescribedMedication" asp-route-id="@item.itemId" class="btn btn-secondary" disabled>Administer</button>
+                                            </form>
+                                        </td>
+                                    }
+
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="alert alert-warning text-center">
+                    <strong>No medication has been administered to this patient yet.</strong>
+                </div>
+            }
+        </div>
+
+        <h3>Discharge</h3>
+        @if (Model.Admission != null && Model.Admission.AdmissionStatus == "Admitted")
+        {
+            <div class="alert alert-warning text-center">
+                <strong>This Patient is still Admitted.</strong>
+            </div>
+            <form asp-action="discharge" method="post">
+                <input type="hidden" name="id" value="@Model.Admission.AdmisionID" />
+                <button type="submit" class="btn btn-danger">Discharge</button>
+            </form>
+        }
+
+    </div>
+</div>
+
+

@@ -1,0 +1,93 @@
+﻿@model iCare_ePrescribing_System.ViewModels.Nurse.VitalsViewModel;
+
+@{
+    ViewData["Title"] = "AddVitals";
+    Layout = "_NursePharmaLayout";
+}
+
+@* <h2>Retake Vital for @Model.Patient.Name</h2>
+
+<div class="row">
+    <div class="col-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Retake Vital</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" asp-action="AddVitals">
+                    <!-- Hidden input for AdmissionID and PatientVitalID -->
+                    <input type="hidden" asp-for="Admission.AdmisionID" />
+                    <input type="hidden" asp-for="Patient.PatientId" />
+                    <input type="hidden" name="PatientVitals[0].PatientVitalsId" value="@Model.PatientVitals[0].PatientVitalsId" />
+
+                    <div class="form-group">
+                        <label>Select Vital:</label>
+                        <select class="form-control">
+                            <option value="@Model.Vitals[0].VitalId">@Model.Vitals[0].Name</option>
+                        </select>
+                        <input type="hidden" name="PatientVitals[0].VitalId" value="@Model.Vitals[0].VitalId" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="readingInput">Vital Reading:</label>
+                        <input type="text" name="PatientVitals[0].Readings" class="form-control" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="captureTimeInput">Capture Time:</label>
+                        <input type="datetime-local" name="PatientVitals[0].CaptureTime" class="form-control" />
+                    </div>
+
+                    <a class="btn btn-secondary mt-3" asp-action="PatientProfile" asp-route-id="@Model.Patient.PatientId">Profile</a>
+                    <button type="submit" asp-controller="Nurse" asp-action="AddVitals" class="btn btn-primary">Save Retaken Vital</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div> *@
+
+<h2>Retake Vital for @Model.Patient.Name</h2>
+
+<div class="row">
+    <div class="col-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Retake Vital</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="AddVitals" method="post">
+                    <!-- Hidden input for AdmissionID and PatientVitalID -->
+                    <input type="hidden" asp-for="Admission.AdmisionID" />
+                    <input type="hidden" asp-for="Patient.PatientId" />
+                    
+                    <!-- Hidden input for the PatientVitalId -->
+                    <input type="hidden" asp-for="PatientVitals[0].PatientVitalsId" value="@Model.PatientVitals[0].PatientVitalsId" />
+
+                    <div class="form-group">
+                        <label>Vital:</label>
+                        <select class="form-control" disabled>
+                            <option value="@Model.Vitals[0].VitalId">@Model.Vitals[0].Name</option>
+                        </select>
+                        <!-- Hidden input to ensure VitalId is sent -->
+                        <input type="hidden" asp-for="PatientVitals[0].VitalId" value="@Model.Vitals[0].VitalId" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="readingInput">Vital Reading:</label>
+                        <!-- Ensure name is correctly bound to PatientVitals[0].Readings -->
+                        <input type="text" asp-for="PatientVitals[0].Readings" class="form-control" value="@Model.PatientVitals[0].Readings" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="captureTimeInput">Capture Time:</label>
+                        <!-- Ensure name is correctly bound to PatientVitals[0].CaptureTime -->
+                        <input type="datetime-local" asp-for="PatientVitals[0].CaptureTime" class="form-control" value="@Model.PatientVitals[0].CaptureTime.ToString("yyyy-MM-ddTHH:mm")" required />
+                    </div>
+
+                    <a class="btn btn-secondary mt-3" asp-action="PatientProfile" asp-route-id="@Model.Patient.PatientId">Profile</a>
+                    <button type="submit" asp-controller="Nurse" asp-action="AddVitals" class="btn btn-primary">Save Retaken Vital</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

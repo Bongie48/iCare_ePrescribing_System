@@ -1,0 +1,207 @@
+﻿@model iCare_ePrescribing_System.ViewModels.GetMedicineViewModel
+@using Microsoft.AspNetCore.Identity
+@using iCare_ePrescribing_System.Data
+@inject SignInManager<StaffMembers> SignInManager
+@inject UserManager<StaffMembers> UserManager
+@{
+    ViewData["Title"] = "View Medication";
+    Layout = "PharmaLayout";
+    string ProfilePicture = " ";
+    if (Model.profile != null)
+    {
+        ProfilePicture = Model.profile;
+    }
+    var user = await UserManager.FindByNameAsync(User.Identity.Name);
+}
+<style>
+    .modal-custom {
+        max-width: 400px; 
+    }
+</style>
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<section id="wrapper">
+    <div class="p-4">
+        <div class="welcome">
+            <div class="content rounded-3 p-3">
+                <h1 class="navbar-brand" href="#"> <span class="main-color">Medication</span></h1>
+            </div>
+        </div>
+        <br />
+        <form class="form-control border-primary" asp-controller="Pharma" asp-action="ViewMed" style="background-color:whitesmoke; padding: 20px;">
+            <section class="charts mt-4">
+                <h5 class="text-left">Medication List</h5>
+                <hr />
+                @if (TempData["DeleteMedication"] != null)
+                {
+                    <div class="alert alert-danger">
+                        <strong>Note!</strong> @TempData["DeleteMedication"]
+                    </div>
+                }
+                @if (TempData["success1"] != null)
+                {
+                    <div class="alert alert-success">
+                        <strong>Note!</strong> @TempData["success1"]
+                    </div>
+                }
+                <div>
+                    <p><i>Legend for Re-Order Status Icons</i></p>
+                    <ul>
+                        <li>
+                            <span style="font-size: 12px;">🔵</span>
+                            <strong>Meaning:</strong><em> Stock Adequate</em>.
+                        </li>
+                        <li>
+                            <span style="font-size: 12px;">🔴</span>
+                            <strong>Meaning:</strong><em> Reorder Needed</em>.
+                        </li>
+                    </ul>
+                </div>
+                <div class="table-responsive">
+                    <table class="table caption-top table-hover">
+                        <thead class="table-primary">
+                            <tr>
+                                <th scope="col">Name</th>
+                                <th scope="col">Stock On Hand</th>
+                                <th scope="col">Re-Order Level</th>
+                                <th scope="col">Dosage Form</th>
+                                <th scope="col">Schedule</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Medication Image</th>
+                                <th scope="col">Active Ingredients</th>
+                                <th scope="col" class="text-center">Update</th>
+                                <th scope="col" class="text-center">View Detalis</th>
+                                <th scope="col" class="text-center">Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model != null && Model.medicationlist.Any())
+                            {
+                                foreach (var x in Model.medicationlist)
+                                {
+                                    <tr>
+                                        <td>@x.MedicationName</td>
+                                        <td>@x.Quantity</td>
+                                        <td>@x.ReOrder</td>
+                                        <td>@x.DosageForm.DosageName</td>
+                                        <td>@x.Schedule.ScheduleName</td>
+                                        
+                                            @if (x.ReOrderStatus == 'n')
+                                            {
+                                            <td style='font-size:25px;'>&#128309;</td>
+                                            }
+                                            else
+                                            {
+                                                <td style='font-size:25px;'>&#128308;</td>
+                                            }
+                                       
+                                        <td>
+                                            <img src="../images/@Html.DisplayFor(modelItem => x.image)" style="height:100px; width:90px" alt="Medication Image" />
+                                        </td>
+                                        <td>
+                                            @foreach (var y in Model.ingredientlist)
+                                            {
+                                                if (x.MedicationId == y.medicineid)
+                                                {
+                                                    <p>• @y.ActiveIngredient.ActiveName &nbsp; (@y.Strength mg)</p>
+
+                                                }
+                                            }
+                                        </td>
+                                        <td class="text-center">
+                                            <a class="btn btn-primary" asp-controller="Pharma" asp-action="UpdateMed" asp-route-id="@x.MedicationId">
+                                                Update <i class="fa-regular fa-pen-to-square"></i>
+                                            </a>
+                                        </td>
+                                        <td class="text-center">
+                                           
+                                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#detailModal-@x.MedicationId">
+                                                View <i class="fa-regular fa-eye"></i>
+                                            </button>
+                                        </td>
+
+                                        <td class="text-center">
+                                            <a class="btn btn-danger" asp-controller="Pharma" asp-action="DeleteMedication" asp-route-id="@x.MedicationId" onclick="return confirm('Are you sure you want to delete @x.MedicationName?');">
+                                                Delete <i class="fa-solid fa-x"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    
+                                    <div class="modal fade" id="detailModal-@x.MedicationId" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="detailModalLabel-@x.MedicationId" aria-hidden="true">
+                                        <div class="modal-dialog modal-custom">
+                                            
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h1 class="modal-title fs-5" id="detailModalLabel-@x.MedicationId">Medication Details</h1>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <p><img src="../images/@Html.DisplayFor(modelItem => x.image)" style="height:120px; width:160px" alt="Medication Image" /></p>
+                                                    <p><strong>Medication Name:</strong> @x.MedicationName</p>
+                                                    <p><strong>Stock On Hand:</strong> @x.Quantity</p>
+                                                    <p><strong>Re-Order Level:</strong> @x.ReOrder</p>
+                                                    <p><strong>Dosage Form:</strong> @x.DosageForm.DosageName</p>
+                                                    <p><strong>Schedule:</strong> @x.Schedule.ScheduleName</p>
+                                                    <p >
+                                                        <strong>Re-Order Status:</strong>
+                                                        @if (x.ReOrderStatus == 'n')
+                                                        {
+                                                            @:&#128309; 
+                                                        }
+                                                        else
+                                                        {
+                                                            @:&#128308; 
+                                                        }
+                                                    </p>
+                                                    <p><strong>Medication Active Ingredients:</strong></p>
+                                                    @foreach (var y in Model.ingredientlist)
+                                                    {
+                                                        if (x.MedicationId == y.medicineid)
+                                                        {
+                                                            <p>• @y.ActiveIngredient.ActiveName &nbsp; (@y.Strength mg)</p>
+
+                                                        }
+                                                    }
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                    
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="10" class="text-center">No records found</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </form>
+      
+        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        ...
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Understood</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

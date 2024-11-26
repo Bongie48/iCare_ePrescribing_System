@@ -1,0 +1,23 @@
+﻿@model iCare_ePrescribing_System.ViewModels.Nurse.ProfileViewModel
+
+<table class="table table-striped table-hover caption-top">
+    <thead>
+        <tr>
+            <th>Identity Number</th>
+            <th>First Name </th>
+            <th>surname </th>
+            <th>Gender </th>
+            <th>Date Of Birth </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>@Model.Patient.IDNo</td>
+            <td>@Model.Patient.Name </td>
+            <td>@Model.Patient.Surname </td>
+            <td>@Model.Patient.Gender </td>
+            <td>@Model.Patient.DateOfBirth.ToShortDateString() </td>
+        </tr>
+    </tbody>
+</table>

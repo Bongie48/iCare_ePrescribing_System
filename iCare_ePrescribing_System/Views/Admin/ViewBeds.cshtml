@@ -1,0 +1,63 @@
+﻿@model IEnumerable<iCare_ePrescribing_System.Models.Bed>
+
+@{
+    ViewData["Title"] = "ViewBeds";
+    Layout = "_MainLayout";
+}
+
+<div class="p-4">
+    <div class="welcome">
+        <div class="content rounded-3 p-3">
+            <h1 class="navbar-brand" href="#"> <span class="main-color">beds</span></h1>
+        </div>
+    </div>
+    <br />
+
+    <div style="background-color:whitesmoke;">
+
+
+        <h1>ViewBeds</h1>
+
+        <p>
+            <a asp-controller="Admin" asp-action="CreateBed" asp-route-id="@ViewData["WardID"]">New Bed</a>
+        </p>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.BedNo)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Status)
+                    </th>
+                    @* <th>
+                        @Html.DisplayNameFor(model => model.Ward)
+                    </th> *@
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.BedNo)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Status)
+                        </td>
+                        @* <td>
+                            @Html.DisplayFor(modelItem => item.Ward.Name)
+                        </td> *@
+                        @* <td>
+                            <a asp-action="Edit" asp-route-id="@item.BedID">Edit</a> |
+                            <a asp-action="Delete" asp-route-id="@item.BedID">Delete</a>
+                        </td> *@
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <a class="btn btn-outline-primary" asp-action="Ward" asp-controller="Admin">Wards</a>
+        <a class="btn btn-outline-primary" asp-action="ViewBeds" asp-controller="Admin">Back</a>
+    </div>
+</div>

@@ -1,0 +1,36 @@
+﻿@model iCare_ePrescribing_System.Models.Ward;
+
+@{
+    ViewData["Title"] = "Ward";
+    Layout = "_MainLayout";
+}
+
+
+<div class="p-4">
+    <div class="welcome">
+        <div class="content rounded-3 p-3">
+            <h1 class="navbar-brand" href="#"> <span class="main-color">Add Wards</span></h1>
+        </div>
+    </div>
+    <br />
+
+    <div style="background-color:whitesmoke;">
+        <form class="form-control border-primary" class="row g-3" asp-controller="Admin" asp-action="CreateWard" method="post" style="background-color:whitesmoke;">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group"> 
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group">
+                <label asp-for="NoOfBeds" class="control-label"></label>
+                <input asp-for="NoOfBeds" class="form-control" />
+                <span asp-validation-for="NoOfBeds" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>

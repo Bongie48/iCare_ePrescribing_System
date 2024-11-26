@@ -1,0 +1,39 @@
+﻿@model iCare_ePrescribing_System.Models.Bed;
+
+@{
+    ViewData["Title"] = "Bed";
+    Layout = "_MainLayout";
+}
+
+
+<div class="p-4">
+    <div class="welcome">
+        <div class="content rounded-3 p-3">
+            <h1 class="navbar-brand" href="#"> <span class="main-color">Add Bed</span></h1>
+        </div>
+    </div>
+    <br />
+
+    <div style="background-color:whitesmoke;">
+        <form class="form-control border-primary" class="row g-3" asp-controller="Admin" asp-action="CreateBed" method="post" style="background-color:whitesmoke;">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <!-- Hidden input to include WardID in the form submission -->
+            <input type="hidden" name="WardID" value="@ViewData["WardID"]" />
+            <div class="form-group">
+                <label asp-for="BedNo" class="control-label"></label>
+                <input asp-for="BedNo" class="form-control" />
+                <span asp-validation-for="BedNo" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Status" class="control-label"></label>
+                <input asp-for="Status" class="form-control" />
+                <span asp-validation-for="Status" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,109 @@
+﻿@model iCare_ePrescribing_System.Models.ActiveIngredient
+@{
+    Layout = "PharmaLayout";
+    string special = "@gmail.com", special1 = "@outlook.com", special2 = "@mandela.ac.za", special3 = "@nompilo.co.za";
+    string name = User.Identity?.Name.ToString();
+    if (name.ToLowerInvariant().Contains(special))
+    {
+        name = name.Replace(special, " ");
+    }
+    else if (name.ToLowerInvariant().Contains(special1))
+    {
+        name = name.Replace(special1, " ");
+    }
+    else if (name.ToLowerInvariant().Contains(special2))
+    {
+        name = name.Replace(special2, " ");
+    }
+    else if (name.ToLowerInvariant().Contains(special3))
+    {
+        name = name.Replace(special3, " ");
+    }
+}
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<aside class="sidebar position-fixed top-0 left-0 overflow-auto h-100 float-left" id="show-side-navigation1">
+    <i class="uil-bars close-aside d-md-none d-lg-none" data-close="show-side-navigation1"></i>
+    <div class="sidebar-header d-flex justify-content-center align-items-center px-3 py-4">
+        <img class="rounded-pill img-fluid"
+             width="65"
+             src=""
+             alt="">
+        <div class="ms-2">
+            <h5 class="fs-6 mb-0">
+                <a class="text-decoration-none" href="#" style="color:black;">@name</a>
+            </h5>
+        </div>
+    </div>
+    <ul class="categories list-unstyled" style="color:black">
+        <li class="has-dropdown">
+            <i class="fa-solid fa-house"></i><a asp-controller="User" asp-action="" style="color:black;">Home</a>
+        </li>
+        <hr />
+        <li class="has-dropdown">
+            <i class="fa-solid fa-user"></i>
+            <a asp-controller="User" asp-action="AddUser" style="color:black;">Register User</a>
+        </li>
+        <hr />
+        <li class="has-dropdown">
+            <i class="fa-solid fa-users-viewfinder"></i><a asp-controller="User" asp-action="Index" style="color:black;">View Staff Members</a>
+        </li>
+        <hr />
+        <li class="has-dropdown">
+            <i class="fa-solid fa-mortar-pestle"></i>
+            <a asp-controller="Admin" asp-action="MedDosageForm" style="color:black;">Add Dosage Form</a>
+        </li>
+        <hr />
+        <li class="has-dropdown">
+            <i class="fa-solid fa-flask-vial"></i>
+            <a asp-controller="Admin" asp-action="MedIngedients" style="color:black;">Add Ingredients</a>
+        </li>
+        <li class="has-dropdown" style="background-color:#DCDCDC;">
+            <i class="fa-solid fa-flask-vial"></i>
+            <a asp-controller="Admin" asp-action="UpdateActive" style="color:black;">Update Ingredients</a>
+        </li>
+        <hr />
+        <li class="has-dropdown">
+            <i class="fa-solid fa-house-medical-flag"></i>
+            <a asp-controller="Admin" asp-action="MedSchedules" style="color:black;">Add Schedule</a>
+        </li>
+        <hr />
+        <li class="has-dropdown">
+            <i class="fa-solid fa-right-from-bracket"></i><a style="color:black;"> Log Out</a>
+        </li>
+    </ul>
+</aside>
+<section id="wrapper">
+    <div class="p-4">
+        <div class="welcome">
+            <div class="content rounded-3 p-3">
+                <h1 class="navbar-brand" href="#"> <span class="main-color">Active Ingredients</span></h1>
+            </div>
+        </div>
+        <br />
+        <form class="form-control border-primary" class="row g-3" asp-action="ActiveDelete" style="background-color:whitesmoke;">
+            <input type="text" asp-for="@Model.ActiveID" class="form-control" disabled>
+            <section class="charts mt-3">
+                <h5>Active Ingredients</h5>
+                <hr />
+                <table class="table table-borderless">
+                    <thead>
+                        <tr>
+                            <div class="col-sm-6 form-group">
+                                <label for="name-f">Ingredient Name</label>
+                                <input type="text" asp-for="@Model.ActiveName" class="form-control" disabled>
+                            </div>
+                        </tr>
+                    </thead>
+                </table>
+            </section>
+        </form>
+    </div>
+</section>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+}

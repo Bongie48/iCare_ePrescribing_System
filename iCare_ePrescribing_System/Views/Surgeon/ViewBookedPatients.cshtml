@@ -1,0 +1,225 @@
+﻿@model IEnumerable<iCare_ePrescribing_System.Models.BookSurgery>
+
+@{
+    ViewData["Title"] = "Home Page";
+    Layout = "_SurgeonLayout";
+}
+@{
+    string special = "@gmail.com", special1 = "@outlook.com", special2 = "@mandela.ac.za", special3 = "@nompilo.co.za";
+    string name = User.Identity?.Name.ToString();
+    if (name.ToLowerInvariant().Contains(special))
+    {
+        name = name.Replace(special, " ");
+    }
+    else if (name.ToLowerInvariant().Contains(special1))
+    {
+        name = name.Replace(special1, " ");
+    }
+    else if (name.ToLowerInvariant().Contains(special2))
+    {
+        name = name.Replace(special2, " ");
+    }
+    else if (name.ToLowerInvariant().Contains(special3))
+    {
+        name = name.Replace(special3, " ");
+    }
+}
+
+<aside class="sidebar position-fixed top-0 left-0 overflow-auto h-100 float-left" id="show-side-navigation1">
+    <i class="uil-bars close-aside d-md-none d-lg-none" data-close="show-side-navigation1"></i>
+    <div class="sidebar-header d-flex justify-content-center align-items-center px-3 py-4">
+        <img class="rounded-pill img-fluid"
+             width="65"
+             src=""
+             alt="">
+        <div class="ms-2">
+            <h5 class="fs-6 mb-0">
+                <a class="text-decoration-none" href="#">@name</a>
+            </h5>
+
+        </div>
+    </div>
+
+    <div class="search position-relative text-center px-4 py-3 mt-2">
+        <input type="text" class="form-control w-100 border-0 bg-transparent" placeholder="Search here">
+        <i class="fa fa-search position-absolute d-block fs-6"></i>
+    </div>
+
+    <ul class="categories list-unstyled">
+        <li class="has-dropdown">
+            <i class="uil-estate fa-fw"></i><a asp-controller="Surgeon" asp-action="BookSurgery"> &#128200;Book Surgery</a>
+            <ul class="sidebar-dropdown list-unstyled">
+                <li><a href="#">View Prescription</a></li>
+
+            </ul>
+        </li>
+        <li>
+            <i class="uil-estate fa-fw"></i>
+            <a asp-controller="Surgeon" asp-action="ConfirmSurgery">&#128200;Confirm Surgery</a>
+        </li>
+        <li>
+            <i class="uil-estate fa-fw">
+
+            </i><a asp-controller="Surgeon" asp-action="ViewBookedPatients">&#128200; Booked Patients</a>
+        </li>
+
+
+        <li class="has-dropdown">
+            <i class="uil-calendar-alt"></i><a asp-controller="Surgeon" asp-action="LoadPrescription"> &#128138;Prescribe Medication</a>
+            <ul class="sidebar-dropdown list-unstyled">
+                <li><a href="#">Prescribe Medication</a></li>
+
+            </ul>
+        </li>
+        <li class="has-dropdown">
+            <i class="uil-envelope-download fa-fw"></i><a href="#"> &#128202;Reports</a>
+            <ul class="sidebar-dropdown list-unstyled">
+            </ul>
+        </li>
+        <li class="has-dropdown">
+            <i class="uil-envelope-download fa-fw"></i><a href="#"> &#128204;General</a>
+            <ul class="sidebar-dropdown list-unstyled">
+            </ul>
+        </li>
+        <li class="has-dropdown">
+            <i class="uil-shopping-cart-alt"></i><a class="fas fa-sign-out-alt">
+                <a href="#"> Log Out</a>
+                <ul class="sidebar-dropdown list-unstyled">
+                </ul>
+        </li>
+
+    </ul>
+</aside>
+
+<section id="wrapper">
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Medical Prescription</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat&display=swap">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
+        <style>
+            body {
+                font-family: 'Roboto', sans-serif;
+                margin: 0;
+                padding: 0;
+                background-color: #f4f6f9;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+            }
+
+            .container {
+                width: 100%;
+                max-width: 1000px;
+                margin: 20px 2px;
+                padding: 30px;
+                border: none;
+                border-radius: 10px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                background-color: #ffffff;
+            }
+
+            h1 {
+                text-align: center;
+                margin-top: 0;
+                color: #333;
+                font-size: 24px;
+            }
+
+            .form-group {
+                margin-bottom: 15px;
+            }
+
+            label {
+                display: block;
+                font-weight: 500;
+                margin-bottom: 5px;
+                color: #555;
+            }
+
+            input[type="text"],
+            select,
+            input[type="date"] {
+                width: 100%;
+                padding: 10px;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                transition: border-color 0.3s ease;
+                font-size: 14px;
+            }
+
+                input[type="text"]:focus,
+                select:focus,
+                input[type="date"]:focus {
+                    outline: none;
+                    border-color: #007bff;
+                }
+
+            .btn {
+                width: 100%;
+                padding: 12px;
+                background-color: #007bff;
+                color: #fff;
+                text-align: center;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 16px;
+                transition: background-color 0.3s ease;
+                margin-top: 20px;
+            }
+
+                .btn:hover {
+                    background-color: #0056b3;
+                }
+
+            /* Media query for smaller screens */
+            .media (max-width: 768px) {
+                .container
+
+            {
+                margin: 10px;
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            }
+        </style>
+    </head>
+
+<h2>Booked Patients</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Patient Name</th>
+            @* <th>Surgeon</th> *@
+            <th>Surgery Date</th>
+            <th>Theatre</th>
+            <th>Treatment Codes</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var surgery in Model)
+        {
+            <tr>
+                <td>@surgery.Patient.Name @surgery.Patient.Surname</td>
+               @*  <td>@surgery.Surgeon.Name</td> *@
+                <td>@surgery.SurgeryDate.ToString("yyyy-MM-dd")</td>
+                <td>@surgery.Theatre?.TheatreName</td>
+                <td>@surgery.TreatmentCode</td>
+
+                    <a asp-controller="Surgeon" asp-action="ConfirmSurgery" asp-route-SurgeryId="@surgery.SurgeryId">Confirm Surgery</a>
+            </tr>
+        }
+    </tbody>
+</table>
+</html>
+</section>

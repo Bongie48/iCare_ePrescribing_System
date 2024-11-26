@@ -1,0 +1,283 @@
+﻿@model iCare_ePrescribing_System.Models.Prescription
+
+
+@{
+    ViewData["Title"] = "Home Page";
+    Layout = "_SurgeonLayout";
+}
+@{
+    string special = "@gmail.com", special1 = "@outlook.com", special2 = "@mandela.ac.za", special3 = "@nompilo.co.za";
+    string name = User.Identity?.Name.ToString();
+    if (name.ToLowerInvariant().Contains(special))
+    {
+        name = name.Replace(special, " ");
+    }
+    else if (name.ToLowerInvariant().Contains(special1))
+    {
+        name = name.Replace(special1, " ");
+    }
+    else if (name.ToLowerInvariant().Contains(special2))
+    {
+        name = name.Replace(special2, " ");
+    }
+    else if (name.ToLowerInvariant().Contains(special3))
+    {
+        name = name.Replace(special3, " ");
+    }
+}
+<aside class="sidebar position-fixed top-0 left-0 overflow-auto h-100 float-left" id="show-side-navigation1">
+    <i class="uil-bars close-aside d-md-none d-lg-none" data-close="show-side-navigation1"></i>
+    <div class="sidebar-header d-flex justify-content-center align-items-center px-3 py-4">
+        <img class="rounded-pill img-fluid"
+             width="65"
+             src=""
+             alt="">
+        <div class="ms-2">
+            <h5 class="fs-6 mb-0">
+                <a class="text-decoration-none" href="#">@name</a>
+            </h5>
+
+        </div>
+    </div>
+
+    <div class="search position-relative text-center px-4 py-3 mt-2">
+        <input type="text" class="form-control w-100 border-0 bg-transparent" placeholder="Search here">
+        <i class="fa fa-search position-absolute d-block fs-6"></i>
+    </div>
+
+    <ul class="categories list-unstyled">
+        <li class="has-dropdown">
+            <i class="uil-estate fa-fw"></i><a asp-controller="Surgeon" asp-action="BookSurgery"> &#128200;Book Surgery</a>
+            <ul class="sidebar-dropdown list-unstyled">
+                <li><a href="#">View Prescription</a></li>
+               
+            </ul>
+        </li>
+        <li>
+            <i class="uil-estate fa-fw"></i>
+            <a asp-controller="Surgeon" asp-action="ConfirmSurgery">&#128200;Confirm Surgery</a>
+        </li>
+        <li>
+            <i class="uil-estate fa-fw">
+
+            </i><a asp-controller="Surgeon" asp-action="ViewBookedPatients">&#128200; Booked Patients</a>
+        </li>
+
+
+        <li class="has-dropdown">
+            <i class="uil-calendar-alt"></i><a asp-controller="Surgeon" asp-action="LoadPrescription"> &#128138;Prescribe Medication</a>
+            <ul class="sidebar-dropdown list-unstyled">
+                
+            </ul>
+        </li>
+        <li class="has-dropdown">
+            <i class="uil-envelope-download fa-fw"></i><a href="#"> &#128202;Reports</a>
+            <ul class="sidebar-dropdown list-unstyled">
+                
+            </ul>
+        </li>
+        <li class="has-dropdown">
+            <i class="uil-envelope-download fa-fw"></i><a href="#"> &#128204;General</a>
+            <ul class="sidebar-dropdown list-unstyled">
+                
+            </ul>
+        </li>
+        <li class="has-dropdown">
+            <i class="uil-shopping-cart-alt"></i><a class="fas fa-sign-out-alt"><a href="#"> Log Out</a>
+            <ul class="sidebar-dropdown list-unstyled">
+                
+            </ul>
+        </li>
+
+    </ul>
+</aside>
+
+<section id="wrapper">
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+  <meta charset="utf-8">
+  <title>Medical Prescription</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+   
+    .container {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      background-color: #fff;
+    }
+   
+    h1 {
+      text-align: center;
+      margin-top: 0;
+    }
+   
+    .form-group {
+      margin-bottom: 20px;
+    }
+   
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+   
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      transition: border-color 0.3s ease;
+    }
+   
+    input[type="text"]:focus {
+      outline: none;
+      border-color: #007bff;
+    }
+   
+    .btn {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
+    }
+   
+    .btn:hover {
+      background-color: #0056b3;
+    }
+   
+    .prescription {
+      margin-top: 30px;
+      text-align: center;
+      display: none;
+    }
+   
+    .prescription p {
+      margin-bottom: 10px;
+    }
+   
+    .prescription .sign {
+    margin-top: 30px;
+    margin-bottom: 10px;
+}
+   
+    .history-popup {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 300px;
+      padding: 20px;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      animation: slide-in 0.5s ease;
+      display: none;
+    }
+   
+    .history-popup.active {
+      display: block;
+    }
+   
+    .registration-popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 400px;
+      padding: 20px;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      animation: slide-in 0.5s ease;
+      display: none;
+    }
+.form-scroll {
+    max-height: 600px;
+    overflow-y: auto;
+  }
+    .registration-popup.active {
+      display: block;
+    }
+   
+    @@keyframes slide-in {
+      0% {
+        transform: translateX(100%);
+      }
+      100% {
+        transform: translateX(0);
+      }
+    }
+  </style>
+</head>
+<body>
+        <form asp-action="LoadPrescription">
+            @* <div class="form-group"> *@
+                @*<label asp-for="Surgeon"></label>*@
+                <@* select asp-for="MemberId" class="form-control">
+                    @foreach (var surgeon in ViewBag.Surgeons)
+                    {
+                        <option value="@surgeon.SurgeonId">@surgeon.Name @surgeon.Surname</option>
+                    }
+                    <!-- Populate with surgeons from the database -->
+                </select> *@
+            @* </div> *@
+            <div class="form-group">
+                <label asp-for="Patient"></label>
+                <select asp-for="PatientId" class="form-control">
+                    @foreach (var patient in ViewBag.Patients)
+                    {
+                        <option value="@patient.PatientId">@patient.Name @patient.Surname</option>
+                    }
+                    <!-- Populate with patients from the database -->
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="DateIssued"> Date Issued</label>
+                <input asp-for="DateIssued" type="date" class="form-control" />
+            </div>
+            @* <div class="form-group">
+                <label asp-for="MedicationName">Medication Name </label>
+                <input asp-for="MedicationName" class="form-control" />
+            </div> *@
+            @* <div class="form-group">
+                <label asp-for="DosageForm"></label>
+                <input asp-for="DosageForm" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Strength"></label>
+                <input asp-for="Strength" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Quantity"></label>
+                <input asp-for="Quantity" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Instructions"></label>
+                <textarea asp-for="Instructions" class="form-control"></textarea>
+            </div> *@
+            <button type="submit" class="btn btn-primary">Load Prescription</button>
+        </form>
+
+</body>
+    
+</html>
+
+</section>
+

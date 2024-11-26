@@ -1,0 +1,122 @@
+﻿@model IEnumerable<iCare_ePrescribing_System.Models.Prescription>
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore;
+@using iCare_ePrescribing_System.Data
+@inject SignInManager<StaffMembers> SignInManager
+@inject UserManager<StaffMembers> UserManager
+@inject ApplicationDbContext context
+@{
+    ViewData["Title"] = "Pharmacist Dashboard";
+    Layout = "PharmaLayout";
+    var user = await UserManager.FindByNameAsync(User.Identity.Name);
+    var prescriptionsitems = context.PrescriptionItem.Include(x=>x.medication)
+    .ToList();
+}
+<style>
+    .text-muted {
+        color: #6c757d; /* Muted color for less emphasis */
+        font-style: italic; /* Example style */
+    }
+</style>
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<section id="wrapper">
+    <div class="welcome">
+        <div class="content rounded-3 p-3">
+            <h1 class="navbar-brand" href="#"> <span class="main-color">Prescription</span></h1>
+        </div>
+    </div>
+    <br />
+    <form class="form-control border-primary" asp-controller="Pharma" asp-action="ViewDespensed" method="get" style="background-color:whitesmoke;width:auto">
+        <h5 class="text-left">Prescription History</h5>
+        <hr />
+        @if (TempData["error2"] != null)
+        {
+            <div class="alert alert-danger">
+                <strong>Note!</strong> @TempData["error2"]
+            </div>
+        }
+        <div class="input-group mb-3">
+            <label><b>Search Record:</b> &nbsp; &nbsp;</label>
+            <input value="@ViewData["GetPrescriptionRecord"]" name="recordSearh" class="form-control" type="search" placeholder="Enter patient name or surname/ doctor name or surname/ prescription status" size="20" />
+            <input class="btn btn-secondary" type="submit" value="Search">&nbsp; &nbsp;
+            <a asp-controller="Pharma" asp-action="ViewDespensed" class="btn btn-success">View All</a>
+        </div>
+        <section class="charts mt-4">
+            <div>
+                <p><i>Legend for priority Status Icons</i></p>
+                <ul>
+                    <li>
+                        <span style="font-size: 12px;">🔵</span>
+                        <strong>Meaning:</strong> The prescription is <em>not urgent</em>.
+                    </li>
+                    <li>
+                        <span style="font-size: 12px;">🔴</span>
+                        <strong>Meaning:</strong> The prescription is <em>urgent</em>.
+                    </li>
+                </ul>
+            </div>
+            <table class="table caption-top" >
+                <caption>List of past prescriptions</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Sent/Rejected Date</th>
+                        <th scope="col">Sent/Rejected Time</th>
+                        <th scope="col">Surgeon Responsible</th>
+                        <th scope="col">Patient Name</th>
+                        <th scope="col">Prescribed Medication</th>
+                        <th scope="col">Priority Status</th>
+                        <th>Status</th>
+                        <th scope="col"></th>
+                        <th scope="col"></th>
+                </thead>
+                <tbody>
+                    @foreach(var x in Model)
+                    {
+                        <tr>
+                            <td>@x.DateIssued.ToString("dd MMMM yyyy")</td>
+                            <td>@x.DateIssued.ToString("t")</td>
+                            <td>@x.RegisteredStaff.Name &nbsp; &nbsp;&nbsp;@x.RegisteredStaff.Surname</td>
+                            <td>@x.Patient.Name @x.Patient.Surname</td>
+                            <td>
+                                @foreach (var item in prescriptionsitems)
+                                {
+                                    if (item.PresID == x.PrescriptionId)
+                                    {
+                                        <p>• @item.medication.MedicationName <span class="text-muted">(Quantity: @item.Quantity)</span></p>
+                                    }
+                                }
+                            </td>
+                            @if (x.UrgentStatus == 'n' || x.UrgentStatus == 'N')
+                            {
+                                <td style='font-size:25px;'>&#128309;</td>
+                            }
+                            else
+                            {
+                                <td style='font-size:25px;'>&#128308;</td>
+                            }
+                            <td>@x.TrackStatus</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </section>
+    </form>
+</section>
+<script>
+    <script>
+        $(document).ready(function () {
+            $("#myInput").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $("#myTable tr").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+</script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+

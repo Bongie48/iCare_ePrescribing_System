@@ -1,0 +1,682 @@
+﻿@model iCare_ePrescribing_System.ViewModels.PharmaPrescriptionVM
+@using Microsoft.AspNetCore.Identity
+@using iCare_ePrescribing_System.Data
+@inject SignInManager<StaffMembers> SignInManager
+@inject UserManager<StaffMembers> UserManager
+@{
+    ViewData["Title"] = "Pharmacist Dashboard";
+    Layout = "PharmaLayout";
+    int CountDate = 0;
+    string ProfilePicture = " ";
+    int prescriptionitemID = 0; /*Get medication ID to reference ingredients*/
+    bool InteractionNew = false;
+    bool contraInteraction = false;
+    bool InteractionOld = false;
+    int medicationID = 0;
+    int CountMedical = 0;
+    int CountActiveC = 0;
+    int CountContra = 0;
+    int CountActiveM = 0;
+    int CountActiveP = 0;
+    string allergy = " ";
+    int CountAllergies = 0;
+    int Count = 0;
+
+    List<string> ActiveC = new List<string>();
+    List<string> contra = new List<string>();
+    List<string> ActiveP = new List<string>();
+    List<string> ActiveM = new List<string>();
+    List<string> AllergiesP = new List<string>();
+
+    List<MedContra> PresActiveWithInteraction = new List<MedContra>();
+    List<MedContra> CurrentMedActiveWithInteraction = new List<MedContra>();
+    Dictionary<string, List<string>> PrescriptionInteractions = new Dictionary<string, List<string>>();
+    var CurrentMedInteractions = new Dictionary<string, string> { };
+    // Create a list to track active ingredients from PresActiveWithInteraction that have a match
+    List<MedContra> ingredientsToKeep = new List<MedContra>();
+    List<MedContra> ingredientsToKeepPrescription = new List<MedContra>();
+
+    List<string> medinteractionmessage1 = new List<string>();
+    List<string> medinteractionmessage2 = new List<string>();
+    List<MedInteraction> ContraIndicationPrescription = new List<MedInteraction>();
+}
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<section id="wrapper">
+        <div class="welcome">`
+            <div class="content rounded-3 p-3">
+                <h1 class="navbar-brand" href="#"> <span class="main-color">Prescription</span></h1>
+            </div>
+        </div>
+        <br />
+    <form class="form-control border-primary" method="post" asp-controller="Pharma" asp-action="Despense" style="background-color:whitesmoke;width:auto">
+        <section class="charts mt-4">
+            <h5>Prescription Details</h5>
+            <hr />
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover caption-top">
+                    <thead>
+                        <tr>
+                            <th>Surgeon Responsible</th>
+                            <td>@Model.DoctorName</td>
+                        </tr>
+                        <tr>
+                            <th>Patient Name</th>
+                            <td>@Model.PatientName</td>
+                        </tr>
+                        <tr>
+                            <th>Received Date</th>
+                            <td>@Model.PrescriptionDate.ToString("dd MMMM yyyy")</td>
+                        </tr>
+                        <tr>
+                            <th>Received Time</th>
+                            <td>@Model.PrescriptionDate.ToString("t")</td>
+                        </tr>
+                        <tr>
+                            <th>Priority Status</th>
+                            <td>@Model.Priority</td>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+
+            <div class="table-responsive">
+                <h5>Vitals</h5>
+                <table class="table table-bordered table-hover caption-top">
+                    <thead>
+                        <tr>
+                            <th>Vital</th>
+                            <th>Reading</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var x in Model.patientvitals)
+                        {
+                            <tr>
+                                <td>@x.Vitals.Name</td>
+                                <td><strong>@x.Readings</strong></td>
+                                <td>@x.CaptureTime.ToString("dd MMMM yyyy")</td>
+                                <td>@x.CaptureTime.ToString("t")</td>
+                                <td>
+                                    @if (int.Parse(x.Readings) < x.Vitals.Lowlimit)
+                                    {
+                                        <span class="text-danger">Below Normal Range</span>
+                                    }
+                                    else if (int.Parse(x.Readings) > x.Vitals.Highlimit)
+                                    {
+                                        <span class="text-warning">Above Normal Range</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-success">Normal</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            @if (Model.patientallergies != null && Model.patientallergies.Any())
+            {
+                <div class="table-responsive mt-3">
+                    <h5>Allergies</h5>
+                    <table class="table table-bordered table-hover caption-top">
+                        <thead>
+                            <tr>
+                                <th>Allergy Name</th>
+                                <th>Allergic To Active Ingredients</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var x in Model.patientallergies)
+                            {
+                                <tr>
+                                    <td>@x.Name</td>
+                                    <td>@x.ActiveIngredient.ActiveName</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info mt-2">
+                    <i>The patient has no allergies</i>
+                </div>
+            }
+
+            <div class="table-responsive mt-3">
+                <h5>Medical Conditions</h5>
+                <table class="table table-bordered table-hover caption-top">
+                    <thead>
+                        <tr>
+                            <th>Diagnose Date</th>
+                            <th>Conditions</th>
+                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var x in Model.conditions)
+                        {
+                            if (x.Date.Date != DateTime.Today)
+                            {
+                                <tr>
+                                    <td>@x.Date.ToString("dd MMMM yyyy")</td>
+                                    <td>@x.Condition.ConditionName</td>
+                                </tr>
+                            }
+                            else
+                            {
+                                CountDate = 1;
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            @if (CountDate == 1)
+            {
+                <div class="table-responsive mt-3">
+                    <h5><i>Reason for Today's Visit</i></h5>
+                    <table class="table table-bordered table-hover caption-top">
+                        <thead>
+                            <tr>
+                                <th>Conditions</th>
+                                <th>Diagnose Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var x in Model.conditions)
+                            {
+                                if (x.Date.Date == DateTime.Today)
+                                {
+                                    <tr>
+                                        <td>@x.Condition.ConditionName</td>
+                                        <td>@x.Date.ToString("dd MMMM yyyy")</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+
+            @if (Model.medicinelist != null && Model.medicinelist.Any())
+            {
+                <div class="table-responsive mt-3">
+                    <h5>Current Medication</h5>
+                    <table class="table table-bordered table-hover caption-top">
+                        <thead>
+                            <tr>
+                                <th>Medication Name</th>
+                                <th>Quantity</th>
+                                <th>In-Take Instruction</th>
+                                <th>Medication Active Ingredients</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var x in Model.medicinelist)
+                            {
+                                medicationID = x.MedicationId;
+                                <tr>
+                                    <td>@x.Medication.MedicationName &nbsp; (@x.Medication.DosageForm.DosageName)</td>
+                                    <td>@x.Quantity</td>
+                                    <td>@x.InTakeInstructions</td>
+                                    <td>
+                                        @foreach (var y in Model.MedicationActive)
+                                        {
+                                            if (y.adminmedicineid == medicationID)
+                                            {
+                                                <p>@y.ActiveIngredient.ActiveName &nbsp; (@y.Strength mg)</p>
+                                            }
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info mt-2">
+                    <i>The patient is currently not taking any medication</i>
+                </div>
+            }
+
+            @if (Model.prescriptionitems != null && Model.prescriptionitems.Any())
+            {
+                <div class="table-responsive mt-3">
+                    <h5>Prescribed Medication</h5>
+                    <table class="table table-bordered table-hover caption-top">
+                        <thead>
+                            <tr>
+                                <th>Medication Name</th>
+                                <th>Quantity</th>
+                                <th>In-Take Instructions</th>
+                                <th>Medication Active Ingredients</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.prescriptionitems)
+                            {
+                                prescriptionitemID = item.MedID;
+                                <tr>
+                                    <td>@item.medication.MedicationName &nbsp; (@item.medication.DosageForm.DosageName)</td>
+                                    <td>@item.Quantity</td>
+                                    <td>@item.instruction</td>
+                                    <td>
+                                        @foreach (var p in Model.PrescriptionActive)
+                                        {
+                                            if (p.medicineid == prescriptionitemID)
+                                            {
+                                                <p>@p.ActiveIngredient.ActiveName &nbsp; (@p.Strength mg)</p>
+                                            }
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info mt-2">
+                    <i>There is no record of prescribed medication</i>
+                </div>
+            }
+            <table class="table table-striped table-bordered mt-4">
+                    <thead>
+                        <tr>
+                        <td colspan="2"><h5 style="color:red">Alerts</h5></td>
+                        
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var patientcontra in Model.conditions)
+                    {
+                        foreach (var current in Model.contraList)
+                        {
+                            if (patientcontra.ConditionID == current.MedicalConditionID)
+                            {
+                                ContraIndicationPrescription.Add(current);
+                            }
+                        }
+                    }
+                    @* Check med-interaction in new*@
+                    @foreach (var item in Model.prescriptionitems)
+                    {
+                        prescriptionitemID = item.MedID; //Medication ID in a prescription
+                        foreach (var p in Model.PrescriptionActive) //prescription active ingredients
+                        {
+                            if (p.medicineid == prescriptionitemID)
+                            {
+                                foreach (var currentCheck in Model.medInteractionList)
+                                {
+                                    if (p.ActiveIngredient.ActiveName == currentCheck.ActiveIngredient.ActiveName)
+                                    {
+                                        InteractionNew = true;
+                                        PresActiveWithInteraction.Add(currentCheck);
+                                    }
+                                }
+                                @*Checks contra-Indication*@
+                                @foreach (var x in ContraIndicationPrescription)
+                                {
+                                    if (x.ActiveIngredient.ActiveName == p.ActiveIngredient.ActiveName)
+                                    {
+                                        contraInteraction = true;
+                                        contra.Add(x.Condition.ConditionName + " should no be taken with " + p.ActiveIngredient.ActiveName + " of " + p.AddMedication.MedicationName);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    @*Check med-interaction with presciption items*@
+                    @foreach (var item in Model.medicinelist)
+                    {
+                        prescriptionitemID = item.MedicationId;
+                        foreach (var med in Model.MedicationActive)
+                        {
+                            if (med.adminmedicineid == prescriptionitemID)
+                            {
+                                // Check against each interacting ingredient
+                                foreach (var FindMatch in PresActiveWithInteraction)
+                                {
+                                    if (med.ActiveIngredient.ActiveName == FindMatch.ActiveInteraction.ActiveName)
+                                    {
+                                        InteractionOld = true;
+                                        ingredientsToKeep.Add(FindMatch);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    @foreach (var item in Model.medicinelist)
+                    {
+                        prescriptionitemID = item.MedicationId;
+                        foreach (var med in Model.MedicationActive)
+                        {
+                            if (med.adminmedicineid == prescriptionitemID)
+                            {
+                                foreach(var checking in ingredientsToKeep)
+                                {
+                                    if (checking.ActiveInteraction.ActiveName == med.ActiveIngredient.ActiveName)
+                                    {
+                                        InteractionOld = true;
+                                        medinteractionmessage1.Add($"{checking.ActiveIngredient.ActiveName} on prescribed medication should not be taken with {checking.ActiveInteraction.ActiveName} of {item.Medication.MedicationName}on medication being taken ");
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    @foreach (var item in Model.prescriptionitems)
+                    {
+                        prescriptionitemID = item.MedID;
+                        foreach (var med in Model.PrescriptionActive)
+                        {
+                            if (med.medicineid == prescriptionitemID)
+                            {
+                                // Check against each interacting ingredient
+                                foreach (var FindMatch in PresActiveWithInteraction)
+                                {
+                                    if (med.ActiveIngredient.ActiveName == FindMatch.ActiveInteraction.ActiveName)
+                                    {
+                                        InteractionNew = true;
+                                        ingredientsToKeepPrescription.Add(FindMatch);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    @foreach (var item in Model.prescriptionitems)
+                    {
+                        prescriptionitemID = item.MedID;
+                        foreach (var med in Model.PrescriptionActive)
+                        {
+                            if (med.medicineid == prescriptionitemID)
+                            {
+                                foreach (var checking in ingredientsToKeepPrescription)
+                                {
+                                    if (checking.ActiveInteraction.ActiveName == med.ActiveIngredient.ActiveName)
+                                    {
+                                        InteractionNew = true;
+                                        medinteractionmessage2.Add($"{checking.ActiveIngredient.ActiveName} of {item.medication.MedicationName} should not be prescribed with {checking.ActiveInteraction.ActiveName} of {item.medication.MedicationName}. ");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                    @*Check allergies*@
+                    @foreach (var item in Model.prescriptionitems)
+                    {
+                        prescriptionitemID = item.MedID;
+
+                        @foreach (var x in Model.patientallergies)
+                        {
+                            allergy = x.ActiveIngredient.ActiveName.ToLowerInvariant();
+                            foreach (var p in Model.PrescriptionActive)
+                            {
+
+                                if (p.medicineid == prescriptionitemID)
+                                {
+                                    if ((p.ActiveIngredient.ActiveName.ToLowerInvariant().Contains(allergy)))
+                                    {
+                                        CountAllergies = 1;
+                                        AllergiesP.Add(p.AddMedication.MedicationName + " contains " + p.ActiveIngredient.ActiveName + " which will cause allergic reaction.");
+                                    }
+
+                                }
+                            }
+                        }
+                        
+                    }
+                    
+                    <tr>
+                        @if (InteractionNew==true || InteractionOld==true)
+                        {
+                            <td style="background-color: #f2f2f2; color: black; font-weight: bold;"><i>Medication Interaction: </i></td>
+                            <td>
+                                @if (InteractionOld == true)
+                                {
+                                    <p><b>Found between medication prescribed and patient current medication:</b></p>
+
+                                    @foreach (var x in medinteractionmessage1)
+                                    {
+                                        CountActiveP++;
+
+
+                                        <p><i>@CountActiveP. @x </i></p>
+                                    }
+                                    <hr />
+                                }
+                                @if(InteractionNew==true)
+                                {
+                                <p><b>Found between mediaction prescribed:</b></p>
+                                    @foreach (var y in medinteractionmessage2)
+                                {
+                                    CountActiveM = CountActiveM + 1;
+                                    <p><i>@CountActiveM. @y</i></p>
+                                }
+                                }
+                            </td>
+                        }
+                        else
+                        {
+                            <td colspan="2">
+                                <div class="alert alert-success">
+                                    <strong>No interactions detected.</strong>
+                                </div>
+                            </td>
+                        }
+                    </tr>
+                    <tr>
+                        @if (contraInteraction==true)
+                        {
+                            <td style="background-color: #6c757d; color: white; font-weight: bold;">
+                                <i>CONTRA-INDICATIONS</i>
+                            </td>
+                            <td>
+                                @foreach(string y in contra)
+                                {
+                                    CountContra = CountContra + 1;
+                                    <p><i>@CountContra. @y</i></p>
+                                }
+                            </td>
+                        }
+                    </tr>
+                    @if (CountAllergies > 0)
+                        {    
+                    <tr>
+                            <td style="background-color: #f2f2f2; color: black; font-weight: bold;">
+                                <i>Allergy Triggers</i>
+                            </td>
+                         <td>
+                               
+                                @foreach(string x in AllergiesP)
+                                {
+                                    Count = Count + 1;
+                                    <p><i>@Count. @x</i></p>
+                                }
+                            </td>
+                    </tr>
+                        }
+                    </tbody>
+            </table>
+            <table>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="col-12">
+                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                                    Reject Prescription
+                                </button>
+                                @if (contraInteraction == true || CountAllergies > 0 || InteractionNew == true || InteractionOld == true)
+                                {
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop3">
+                                        Dispense Prescription
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop2">
+                                        Dispense Prescription
+                                    </button>
+                                }
+                               
+                                
+                            </div>
+                        </td> 
+                    </tr>
+                </tbody>
+            </table> 
+            </section>
+        <input asp-for="@Model.prescription.PrescriptionId" class="form-control" value="@Model.prescriptionid" hidden>
+        <input asp-for="@Model.prescription.UrgentStatus" class="form-control" value="@Model.urgency" hidden>
+        <input asp-for="@Model.prescription.TrackStatus" class="form-control" value="Dispersed" hidden>
+        <input asp-for="@Model.prescription.MemberId" class="form-control" value="@Model.DoctorID" hidden>
+        <input asp-for="@Model.prescription.PatientId" class="form-control" value="@Model.PatientID" hidden>
+        
+ 
+        <div class="modal fade" id="staticBackdrop3" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Dispense Prescription</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+
+                    <div>
+                        <label><b>Date Dispersed</b></label>
+                        <input asp-for="@Model.prescription.DateIssued" type="datetime-local"
+                               class="form-control"
+                               value="@(DateTime.Now.ToString("yyyy-MM-ddTHH:mm") ?? DateTime.Now.ToString("yyyy-MM-ddTHH:mm"))"
+                               required>
+                    </div>
+                    <div>
+                        <label for="name-f"><b>Send Notification To</b></label>
+                        <select class="form-control custom-select browser-default" asp-for="EmailText" asp-items="Model.ToEmailAddress" required>
+
+                            <option value="@Model.EmailText" selected="selected">@Model.DoctorName (@Model.EmailText)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="name-f"><b>Disperse Reason</b></label>
+                        <textarea placeholder="Enter a reason for dispersing even though the prescription has alert highlighted."
+                                  rows="4" cols="40" asp-for="@Model.DisperseReason"
+                                  required>
+                            </textarea>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Dispense Prescription</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+  </form>  
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Reject Prescription</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="form-control border-primary" class="row g-3" asp-controller="Pharma" asp-action="RejectPres" style="background-color:whitesmoke" method="post">
+                        <section class="charts mt-3">
+                            <div class="text-center mb-3">
+                                <div class="col-sm-6 form-group mx-auto">
+                                    <label><b>Date Rejected</b></label>
+                                    <input asp-for="@Model.RejectPrescription.RejectDate" type="datetime-local"
+                                           class="form-control"
+                                           value="@(DateTime.Now.ToString("yyyy-MM-ddTHH:mm") ?? DateTime.Now.ToString("yyyy-MM-ddTHH:mm"))"
+                                           required>
+                                </div>
+                                <div class="col-sm-6 form-group mx-auto">
+                                    <label for="name-f"><b>Send Notification To</b></label>
+                                    <select class="form-control custom-select browser-default" asp-for="EmailText" asp-items="Model.ToEmailAddress" required>
+                                        
+                                        <option value="@Model.EmailText" selected="selected">@Model.DoctorName</option>
+                                    </select>
+                                </div>
+                            </div> 
+
+                            <table class="table caption-top text-center">
+                                <thead>
+                                    <tr>
+                                        <td><label for="name-f"><b>Rejection Reason</b></label></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <textarea placeholder="Enter a reason for rejecting the prescription"
+                                                      rows="4" cols="40" asp-for="@Model.RejectPrescription.RejectReason"
+                                                      required></textarea>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-end">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            &nbsp;
+                                            <button type="submit" class="btn btn-danger">Reject</button>
+                                        </td>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </section>
+                        <input asp-for="@Model.RejectPrescription.RejectedPresID" class="form-control" value="@Model.prescriptionid" hidden>
+                        <input asp-for="@Model.prescription.PrescriptionId" class="form-control" value="@Model.prescriptionid" hidden>
+                        <input asp-for="@Model.prescription.UrgentStatus" class="form-control" value="@Model.urgency" hidden>
+                        <input asp-for="@Model.prescription.TrackStatus" class="form-control" value="Rejected" hidden>
+                        <input asp-for="@Model.prescription.MemberId" class="form-control" value="@Model.DoctorID" hidden>
+                        <input asp-for="@Model.prescription.PatientId" class="form-control" value="@Model.PatientID" hidden>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="staticBackdrop2" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Dispense Prescription</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+                <form method="post" asp-controller="Pharma" asp-action="Despense">
+            <div class="modal-body d-flex justify-content-center align-items-center" style="min-height: 200px;">
+                
+                    <div class="text-center mb-3">
+                        <label><b>Date Dispersed</b></label>
+                        <input asp-for="@Model.prescription.DateIssued" type="datetime-local"
+                            class="form-control"
+                            value="@(DateTime.Now.ToString("yyyy-MM-ddTHH:mm") ?? DateTime.Now.ToString("yyyy-MM-ddTHH:mm"))"
+                            required>
+                    </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Dispense Prescription</button>
+            </div>
+                    <input asp-for="@Model.prescription.PrescriptionId" class="form-control" value="@Model.prescriptionid" hidden>
+                    <input asp-for="@Model.prescription.UrgentStatus" class="form-control" value="@Model.urgency" hidden>
+                    <input asp-for="@Model.prescription.TrackStatus" class="form-control" value="Dispersed" hidden>
+                    <input asp-for="@Model.prescription.MemberId" class="form-control" value="@Model.DoctorID" hidden>
+                    <input asp-for="@Model.prescription.PatientId" class="form-control" value="@Model.PatientID" hidden>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,117 @@
+﻿@model iCare_ePrescribing_System.ViewModels.PharmaMedicationVM
+@using Microsoft.AspNetCore.Identity
+@using iCare_ePrescribing_System.Data
+@inject SignInManager<StaffMembers> SignInManager
+@inject UserManager<StaffMembers> UserManager
+@{
+    ViewData["Title"] = "Medication";
+    Layout = "PharmaLayout";
+    string ProfilePicture = " ";
+    if (Model.profile != null)
+    {
+        ProfilePicture = Model.profile;
+    }
+    var user = await UserManager.FindByNameAsync(User.Identity.Name);
+}
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<section id="wrapper">
+    <div class="p-4">
+        <div class="welcome">
+            <div class="content rounded-3 p-3">
+                <h1 class ="navbar-brand" href="#"> <span class="main-color">Medication</span></h1>
+            </div>
+            </div>
+            <br/>
+        <form class="form-control border-primary" class="row g-3" asp-controller="Pharma" asp-action="Medication" style="background-color:whitesmoke;" enctype="multipart/form-data">
+            <section class="charts mt-3">
+                <h5>Add Medication</h5>
+                <hr/>
+                @if (TempData["ErrorName"] != null)
+                {
+                    <div class="alert alert-danger">
+                        <strong>Note ! </strong>@TempData["ErrorName"]
+                    </div>
+                }
+                @if (TempData["addmedication"] != null)
+                {
+                    <div class="alert alert-danger">
+                        <strong>Note ! </strong>@TempData["addmedication"]
+                    </div>
+                }
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger">
+                        <strong>Note ! </strong>@TempData["Error"]
+                    </div>
+                }
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger">
+                        <strong>Note ! </strong>@TempData["ErrorMessage"]
+                    </div>
+                }
+                <table class="table caption-top">
+                    <thead>
+                        <tr>
+                            <div class="col-sm-6 form-group">
+                                <label>Medication Image</label> 
+                                <input type="file" asp-for="@Model.AddMedication.ProfilePhoto" class="form-control" id="ProfilePhoto" accept="image/*" />
+                                <small class="form-text text-muted">Upload an image of the medication.</small>
+                            </div>
+                        </tr>
+                        <tr>
+                            <div class="col-sm-6 form-group">
+                                <label for="name-f">Medication Name</label>
+                                <input type="text" asp-for="@Model.AddMedication.MedicationName" class="form-control" placeholder="Enter medication name" required>
+                            </div>
+                        </tr>
+                        <tr>
+                            <div class="col-sm-6 form-group" hidden>
+                                <label for="name-f">Stock On Hand</label>
+                                <input type="number" asp-for="@Model.AddMedication.Quantity" class="form-control" placeholder="Enter medication quantity on hand" value="0" required>
+                            </div>
+                        </tr>
+                        <tr>
+                            <div class="col-sm-6 form-group">
+                                <label for="name-f">Re-Order Level</label>
+                                <input type="number" asp-for="@Model.AddMedication.ReOrder" class="form-control" placeholder="Enter re-order level" required>
+                            </div>
+                        </tr>
+                        <tr>
+                            <div class="col-sm-6 form-group">
+                                <input  asp-for="@Model.AddMedication.ReOrderStatus" class="form-control"hidden>
+                            </div>
+                        </tr>
+                        <tr>
+                            <div class="col-sm-6 form-group">
+                <label for="Country">Dosage Form</label>
+                                <select class="form-control custom-select browser-default" asp-for="@Model.AddMedication.dosageID" asp-items="@Model.dosage" required>
+                                    <option value="">--Select--</option>          
+                    </select>
+                    </div>
+                        </tr>
+                        <tr>
+                            <div class="col-sm-6 form-group">
+                                <label for="name-f">Medication Schedule</label>
+                                <select class="form-control custom-select browser-default" asp-for="@Model.AddMedication.scheduleID" asp-items="@Model.schedule" required>
+                                    <option value="">--Select--</option> 
+                                </select>
+                            </div>
+                        </tr>
+                        <tr>
+
+                            <div class="col-sm-6 form-group">
+                            <div class="text-end mt-2">
+                                <button type="submit" class="btn btn-primary">Proceed <i class="fa-solid fa-arrow-right"></i></button>
+                            </div>
+                            </div>
+                        </tr>
+                    </thead>
+                </table>
+            </section>
+        </form>
+    </div>
+</section>

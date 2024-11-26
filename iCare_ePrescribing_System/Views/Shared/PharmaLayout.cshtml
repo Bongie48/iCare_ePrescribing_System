@@ -1,0 +1,197 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using iCare_ePrescribing_System.Data
+@inject SignInManager<StaffMembers> SignInManager
+@inject UserManager<StaffMembers> UserManager
+@{
+    var user = await UserManager.FindByNameAsync(User.Identity.Name);
+}
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - iCare_ePrescribing_System</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/PharmaDashSheet.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/iCare_ePrescribing_System.styles.css" asp-append-version="true" />
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header class="fixed-top">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                    </ul>
+                    <partial name="_PLoginPartial" />
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            
+            @if (ViewContext.RouteData.Values["controller"].ToString() == "Pharma" && ViewContext.RouteData.Values["action"].ToString() == "MedicineIngredients")
+            {
+                <aside class="sidebar position-fixed top-0 left-0 overflow-auto h-100 float-left" id="show-side-navigation1">
+    <i class="uil-bars close-aside d-md-none d-lg-none" data-close="show-side-navigation1"></i>
+    <div class="sidebar-header d-flex justify-content-center align-items-center px-3 py-4">
+        <img class="rounded-pill img-fluid"
+             width="65"
+                             src="../images/@Html.DisplayFor(modelItem=>user.image)"
+             alt="">
+        <div class="ms-2">
+            <h5 class="fs-6 mb-0">
+                <a class="text-decoration-none" href="#">@user.FullName</a>
+            </h5>
+        </div>
+    </div>
+    <ul class="categories list-unstyled" style="color:black">
+        <li class="has-dropdown" style="border-bottom: 1px solid #ccc; padding: 10px 0;">
+            <i class="fa-solid fa-house"></i>
+            <a data-bs-toggle="modal" data-bs-target="#staticBackdrop" style="color:black">
+                DashBoard
+            </a>
+        </li>
+        <li class="has-dropdown" style="border-bottom: 1px solid #ccc; padding: 10px 0;">
+            <i class="fa-solid fa-user-edit me-2"></i><a asp-controller="User" asp-action="Edit" asp-route-id="@user.Id" style="color:black;">
+                Edit Profile
+            </a>
+        </li>
+        <li class="has-dropdown" style="border-bottom: 1px solid #ccc; padding: 10px 0;">
+            <i class="fa-solid fa-prescription-bottle-medical"></i><a data-bs-toggle="modal" data-bs-target="#staticBackdrop" style="color:black">
+                View Active Prescriptions
+            </a> 
+        </li>
+        <li class="has-dropdown" style="border-bottom: 1px solid #ccc; padding: 10px 0;">
+            <i class="fa-solid fa-calendar-days"></i>
+            <a data-bs-toggle="modal" data-bs-target="#staticBackdrop" style="color:black">
+                View Prescription History
+            </a>
+        </li>
+        <li class="has-dropdown" style="border-bottom: 1px solid #ccc; padding: 10px 0;">
+            <i class="fa-solid fa-notes-medical"></i> <a data-bs-toggle="modal" data-bs-target="#staticBackdrop" style="color:black">
+                Add Medication
+            </a>
+        </li>
+        <li class="has-dropdown" style="background-color:#DCDCDC;border-bottom: 1px solid #ccc; padding: 10px 0;">
+            <i class="fa-solid fa-filter"></i>
+            <a asp-controller="Pharma" asp-action="MedicineIngredients" style="color:black">Add Active Ingredients</a>
+        </li>
+        <li class="has-dropdown" style="border-bottom: 1px solid #ccc; padding: 10px 0;">
+            <i class="fa-solid fa-tablets"></i>
+            <a data-bs-toggle="modal" data-bs-target="#staticBackdrop" style="color:black">
+                View Medication
+            </a>
+        </li>
+        <li class="has-dropdown" style="border-bottom: 1px solid #ccc; padding: 10px 0;">
+            <i class="fa-solid fa-arrow-up-wide-short"></i>
+            <a data-bs-toggle="modal" data-bs-target="#staticBackdrop" style="color:black">
+                Order Medication
+            </a>
+        </li>
+        <li class="has-dropdown" style="border-bottom: 1px solid #ccc; padding: 10px 0;">
+            <i class="fa-solid fa-arrow-trend-up"></i> <a data-bs-toggle="modal" data-bs-target="#staticBackdrop" style="color:black">
+                View Order History
+            </a>
+        </li>
+        <li class="has-dropdown" style="border-bottom: 1px solid #ccc; padding: 10px 0;">
+            <i class="fa-solid fa-plus"></i> <a data-bs-toggle="modal" data-bs-target="#staticBackdrop" style="color:black">
+                Capture Received Stock
+            </a>
+        </li>
+        <li class="has-dropdown" style="border-bottom: 1px solid #ccc; padding: 10px 0;">
+            <i class="fa-solid fa-download"></i>
+            <a asp-controller="Pharma" asp-action="Orders" style="color:black">Dispensary Report</a>
+        </li>
+        <li class="has-dropdown" style="border-bottom: 1px solid #ccc; padding: 10px 0;">
+            <i class="fa-solid fa-chart-simple"></i>
+            <a asp-controller="Pharma" asp-action="Visual" style="color:black">Report Visualisation</a>
+        </li>
+        <li class="has-dropdown" style="padding: 10px 0;">
+            <i class="fa-solid fa-right-from-bracket"></i><a asp-controller="Home" asp-action="Index">Logout</a>
+        </li>
+    </ul>
+</aside>
+            }
+            else
+            {
+            <aside class="sidebar position-fixed top-0 left-0 overflow-auto h-100 float-left" id="show-side-navigation1">
+                <i class="uil-bars close-aside d-md-none d-lg-none" data-close="show-side-navigation1"></i>
+                <div class="sidebar-header d-flex justify-content-center align-items-center px-3 py-4">
+                    <img class="rounded-pill img-fluid"
+                         width="65"
+                         src="../images/@Html.DisplayFor(modelItem=>user.image)"
+                         alt="">
+                    <div class="ms-2">
+                        <h5 class="fs-6 mb-0">
+                            <a class="text-decoration-none" href="#">@user.FullName</a>
+                        </h5>
+                    </div>
+                </div>
+                <ul class="categories list-unstyled" style="color:black">
+                    <li class="has-dropdown @(ViewContext.RouteData.Values["controller"].ToString() == "Dashboard" && ViewContext.RouteData.Values["action"].ToString() == "Pharmacist" ? "active" : "")">
+                        <i class="fa-solid fa-house"></i><a asp-controller="Dashboard" asp-action="Pharmacist" style="color:black">DashBoard</a>
+                    </li>
+
+                    <li class="has-dropdown @(ViewContext.RouteData.Values["controller"].ToString() == "Pharma" &&
+                          ViewContext.RouteData.Values["action"].ToString() == "Prescription" ? "active" : "")">
+                        <i class="fa-solid fa-prescription-bottle-medical"></i>
+                        <a asp-controller="Pharma" asp-action="Prescription" style="color:black">View Active Prescriptions</a>
+
+                       
+                    </li>
+                    <li class="has-dropdown @(ViewContext.RouteData.Values["controller"].ToString() == "Pharma" && ViewContext.RouteData.Values["action"].ToString() == "ViewDespensed" ? "active" : "")">
+                        <i class="fa-solid fa-calendar-days"></i><a asp-controller="Pharma" asp-action="ViewDespensed" style="color:black">View Prescription History</a>
+                    </li>
+                    <li class="has-dropdown @(ViewContext.RouteData.Values["controller"].ToString() == "Pharma" && ViewContext.RouteData.Values["action"].ToString() == "Medication" ? "active" : "")">
+                        <i class="fa-solid fa-notes-medical"></i><a asp-controller="Pharma" asp-action="Medication" style="color:black">Add Medication</a>
+                    </li>
+                    <li class="has-dropdown @(ViewContext.RouteData.Values["controller"].ToString() == "Pharma" && ViewContext.RouteData.Values["action"].ToString() == "ViewMed" ? "active" : "")">
+                        <i class="fa-solid fa-tablets"></i><a asp-controller="Pharma" asp-action="ViewMed" style="color:black">View Medication</a>
+                    </li>
+                    <li class="has-dropdown @(ViewContext.RouteData.Values["controller"].ToString() == "Pharma" && ViewContext.RouteData.Values["action"].ToString() == "OrderMed" ? "active" : "")">
+                        <i class="fa-solid fa-arrow-up-wide-short"></i><a asp-controller="Pharma" asp-action="OrderMed" style="color:black">Order Medication</a>
+                    </li>
+                    <li class="has-dropdown @(ViewContext.RouteData.Values["controller"].ToString() == "Pharma" && ViewContext.RouteData.Values["action"].ToString() == "Stock" ? "active" : "")">
+                        <i class="fa-solid fa-arrow-trend-up"></i><a asp-controller="Pharma" asp-action="Stock" style="color:black">View Order History</a>
+                    </li>
+                    <li class="has-dropdown @(ViewContext.RouteData.Values["controller"].ToString() == "Pharma" && ViewContext.RouteData.Values["action"].ToString() == "CaptureStock" ? "active" : "")">
+                        <i class="fa-solid fa-plus"></i><a asp-controller="Pharma" asp-action="CaptureStock" style="color:black">Capture Received Stock</a>
+                    </li>
+                    <li class="has-dropdown @(ViewContext.RouteData.Values["controller"].ToString() == "Pharma" && ViewContext.RouteData.Values["action"].ToString() == "Orders" ? "active" : "")">
+                        <i class="fa-solid fa-download"></i><a asp-controller="Pharma" asp-action="Orders" style="color:black">Dispensary Report</a>
+                    </li>
+                    <li class="has-dropdown @(ViewContext.RouteData.Values["controller"].ToString() == "Pharma" && ViewContext.RouteData.Values["action"].ToString() == "Visual" ? "active" : "")">
+                        <i class="fa-solid fa-chart-simple"></i><a asp-controller="Pharma" asp-action="Visual" style="color:black">Report Visualisation</a>
+                    </li>
+                   
+                </ul>
+            </aside>
+            }
+            
+            <style>
+                .active {
+                    background-color: #DCDCDC;
+                    border-bottom: 1px solid #ccc;
+                    padding: 10px 0;
+                }
+            </style>
+            @RenderBody()
+        </main>
+    </div>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/PharmaScript.jsasp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

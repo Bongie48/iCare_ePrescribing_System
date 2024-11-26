@@ -1,0 +1,190 @@
+﻿@model iCare_ePrescribing_System.ViewModels.IngredientViewModel
+@using Microsoft.AspNetCore.Identity
+@using iCare_ePrescribing_System.Data
+@inject SignInManager<StaffMembers> SignInManager
+@inject UserManager<StaffMembers> UserManager
+@{
+    ViewData["Title"] = "Medication";
+    Layout = "PharmaLayout";
+    string medicinename = "";
+    int CurrentMedicineID = 0;
+    int medicinequantity = 0;
+    int medicinereorder = 0;
+    string medicinedosage = "";
+    int medicineschedule = 0;
+    int medicineID = 0;
+    int IngredientCount = 0;
+    string image = "";
+    int ButtonShow = 0;
+    foreach (var x in Model.record)
+    {
+        medicinename = x.MedicationName;
+        medicinequantity = x.Quantity;
+        medicinereorder = x.ReOrder;
+        medicinedosage = x.DosageForm.DosageName;
+        medicineschedule = x.Schedule.ScheduleName;
+        medicineID = x.MedicationId;
+        CurrentMedicineID = x.MedicationId;
+        image = x.image;
+    }
+    foreach (var x in Model.Currentingredient)
+    {
+        if (x != null && x.medicineid == medicineID)
+        {
+            IngredientCount = 1;
+            break;
+        }
+    }
+    string ProfilePicture = " ";
+    if (Model.profile != null)
+    {
+        ProfilePicture = Model.profile;
+    }
+    var user = await UserManager.FindByNameAsync(User.Identity.Name);
+}
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<section id="wrapper">
+    <div class="p-4">
+        <div class="welcome">
+            <div class="content rounded-3 p-3">
+                <h1 class="navbar-brand" href="#"> <span class="main-color">Medication</span></h1>
+            </div>
+        </div>
+        <br />
+        <form class="form-control border-primary" class="row g-3" asp-controller="Pharma" asp-action="MedicineIngredients" style="background-color:whitesmoke;">
+            <section class="charts mt-3">
+                <h5>Add Medication Active Ingredients</h5>
+                <hr />
+                @if (TempData["MedicineIngredient"] != null)
+                {
+                    <div class="alert alert-success">
+                        <strong>Note ! </strong>@TempData["MedicineIngredient"]
+                    </div>
+                }
+                @if (TempData["DeleteIngredient"] != null)
+                {
+                    <div class="alert alert-success">
+                        <strong>Note ! </strong>@TempData["DeleteIngredient"]
+                    </div>
+                }
+                <table class="table caption-top">
+                    <tbody>
+                        <tr rowspan="2">
+                            <img src="../images/@Html.DisplayFor(modelItem=>image)" style="height:200px; width:auto" />
+                        </tr>
+                        <tr>
+                            <td><b>Medication Name:</b></td>
+                            <td>@medicinename</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td><b>Stock On Hand:</b></td>
+                            <td>@medicinequantity</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td><b>Re-Order Level:</b></td>
+                            <td>@medicinereorder</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td><b>Dosage Form:</b></td>
+                            <td>@medicinedosage</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td><b>Medication Schedule:</b></td>
+                            <td> Schedule @medicineschedule</td>
+                            <td></td>
+                        </tr>
+                            @if (IngredientCount == 1)
+                            {
+                                <tr>
+                                    <td><b>Ingredients already added:</b></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            }
+                            @foreach (var x in Model.Currentingredient)
+                            {
+                                if (x != null && x.medicineid == medicineID)
+                                {
+                                    <tr>
+                                        <td><i>@x.ActiveIngredient.ActiveName</i></td>
+                                        <td>@x.Strength mg</td>
+                                        <td>
+                                            <a class="btn btn-danger" asp-controller="Pharma" asp-action="DeleteMedIngredient" asp-route-id="@x.MedIngredientId"><i class="fa-solid fa-x"></i></a>
+                                        </td>
+                                    </tr>
+                                    ButtonShow = 1;
+                                }
+                            }
+                    </tbody>
+                </table>
+                <div class="col-sm-6 form-group"hidden>
+                    <select class="form-control custom-select browser-default" asp-for="@Model.medicationIngredient.medicineid" hidden>
+                        <option value="@medicineID">Medicine</option>
+                    </select>
+                </div>
+                <div class="col-sm-6 form-group">
+                    <label for="Country">Ingredient Name</label>
+                    <select class="form-control custom-select browser-default" asp-for="@Model.medicationIngredient.activeid" asp-items="@Model.ingredientname" required>
+                        <option value="">--Select--</option>
+                    </select>
+                </div>
+                <div class="col-sm-6 form-group">
+                    <label for="name-f">Ingredient Strength</label>
+                    <input type="number" asp-for="@Model.medicationIngredient.Strength" class="form-control" placeholder="Enter ingredient strength" required>
+                </div>
+                <br/>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">Submit Ingredient</button>
+                    @if (ButtonShow == 0)
+                    {
+                        <a asp-controller="Pharma" asp-action="DeleteMed" asp-route-id="@medicineID" class="btn btn-danger">Cancel</a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Pharma" asp-action="ViewMed" class="btn btn-primary">Done</a>
+                    }
+                </div>
+            </section>
+        </form>
+    </div>
+
+    
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Active Ingredients</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    @if (ButtonShow == 0)
+                    {
+                        <label><b>@medicinename</b> must have atleast one active ingredient! please add active ingredient or click cancel</label>
+                    }
+                    else
+                    {
+                        <label>Click the done if you have added all active ingredients for <b>@medicinename</b> </label>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    @if (ButtonShow == 0)
+                    {
+                        <a asp-controller="Pharma" asp-action="DeleteMed" asp-route-id="@medicineID" class="btn btn-danger">Cancel</a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Pharma" asp-action="ViewMed" class="btn btn-primary">Done</a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

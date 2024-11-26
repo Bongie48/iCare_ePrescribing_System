@@ -1,0 +1,74 @@
+﻿@model iCare_ePrescribing_System.ViewModels.ConditionsDiagnosisVM;
+
+@{
+    ViewData["Title"] = "Conditions";
+    Layout = "_MainLayout";
+}
+
+<div class="p-4">
+    <div class="welcome">
+        <div class="content rounded-3 p-3">
+            <h1 class="navbar-brand" href="#"> <span class="main-color">Conditions</span></h1>
+        </div>
+    </div>
+    <br />
+
+    <div style="background-color:whitesmoke;">
+        <form class="form-control border-primary" class="row g-3" asp-controller="Admin" asp-action="ConditionDiagnosis" method="post" style="background-color:whitesmoke;">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Condition.ConditionCode" class="control-label"></label>
+                <input asp-for="Condition.ConditionCode" class="form-control" />
+                <span asp-validation-for="Condition.ConditionCode" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Condition.ConditionName" class="control-label"></label>
+                <input asp-for="Condition.ConditionName" class="form-control" />
+                <span asp-validation-for="Condition.ConditionName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+            <h3>
+                List of  Conditions-Diagnosis
+            </h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Condition.ConditionCode)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Condition.ConditionName)
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.ConditionList)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ConditionCode)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ConditionName)
+                            </td>
+                            
+                            <td>
+                                <a asp-action="Edit" asp-route-id="@item.ConditionID ">Edit</a> |
+                                <a asp-action="Delete" asp-route-id="@item.ConditionID">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </form>
+
+        
+
+        
+    </div>
+</div>

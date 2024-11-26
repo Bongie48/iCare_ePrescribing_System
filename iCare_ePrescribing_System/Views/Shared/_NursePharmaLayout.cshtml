@@ -1,0 +1,75 @@
+﻿
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - iCare_ePrescribing_System</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/PharmaDashSheet.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/iCare_ePrescribing_System.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+
+    <div class="container">
+        <main role="main" class="pb-3">
+
+            <aside class="sidebar position-fixed top-0 left-0 overflow-auto h-100 float-left" id="show-side-navigation1">
+                <i class="uil-bars close-aside d-md-none d-lg-none" data-close="show-side-navigation1"></i>
+                <div class="sidebar-header d-flex justify-content-center align-items-center px-3 py-4">
+                    <img class="rounded-pill img-fluid"
+                         width="65"
+                         src=""
+                         alt="">
+                    <div class="ms-2">
+                        <h5 class="fs-6 mb-0">
+                            @TempData["FullName"]
+                        </h5>
+                    </div>
+                </div>
+                <ul class="categories list-unstyled" style="border-bottom: 1px solid #ccc; padding: 10px 0;">
+                    <li class="has-dropdown">
+                        <i class="fa-solid fa-house"></i><a asp-controller="Nurse" asp-action="Index" style="color:black">Home</a>
+                    </li>
+                    <li class="has-dropdown" style="border-bottom: 1px solid #ccc; padding: 10px 0;">
+                        <i class="fa-solid fa-users"></i>
+                        <a asp-controller="Nurse" asp-action="admitedPatientsList" style="color:black;">Admmited</a>
+                    </li>
+                    <li class="has-dropdown" style="border-bottom: 1px solid #ccc; padding: 10px 0;">
+                        <i class="fa-solid fa-users"></i>
+                        <a asp-controller="Nurse" asp-action="Index" style="color:black;">Booked</a>
+                    </li>
+                    <li class="has-dropdown" style="border-bottom: 1px solid #ccc; padding: 10px 0;">
+                        <i class="fa-solid fa-users"></i>
+                        <a asp-controller="Nurse" asp-action="Report" style="color:black;">Reports</a>
+                    </li>
+                    <li class="has-dropdown" style="border-bottom: 1px solid #ccc; padding: 10px 0;">
+                        <i class="fa-solid fa-users"></i>
+                        <a asp-area="Identity" asp-page="/Account/Login" style="color:black;">LogOut</a>
+                    </li>
+                   
+                </ul>
+            </aside>
+
+            <section id="wrapper" style="margin-top: 40px;">
+                @RenderBody()
+            </section>
+        </main>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/PharmaScript.jsasp-append-version=" true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+}

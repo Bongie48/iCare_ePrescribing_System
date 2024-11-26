@@ -1,0 +1,136 @@
+﻿
+@{
+    ViewData["Title"] = "prescription";
+    Layout = "_NurseLayout";
+}
+
+<h2 class="fs-5"> Precsciptions</h2>
+
+<form class="form-control border-primary" asp-action="Prescription" style="background-color:whitesmoke">
+    <section class="charts mt-4">
+        <table class="table caption-top">
+            <caption>List of waiting prescriptions</caption>
+            <thead>
+                <tr>
+
+                    <th scope="col">Surgeon Responsible</th>
+                    <th scope="col">Patient Name</th>
+                    <th scope="col">Received Date</th>
+                    <th scope="col">Received Time</th>
+                    <th scope="col">Prescription Status</th>
+                    <th scope="col"></th>
+@*                    <th scope="col">Alert</th>
+                    <th scope="col">Medical Record</th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>*@
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+
+                    <td>Nombongo Gxekiwe</td>
+                    <td>Sam Smith</td>
+                    <td>24 May 2024</td>
+                    <td>14:45</td>
+                    <td><button type="submit" class="btn btn-primary">Received</button></td>
+                    <td>
+                        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseWidthExample" aria-expanded="false" aria-controls="collapseWidthExample">
+                            Administer
+                        </button>
+                    </td>
+                </tr>
+                @*<tr>
+                    <td style="min-height: 120px;" colspan="6">
+                        <div class="collapse collapse-horizontal" id="collapseWidthExample">
+                            <div class="card card-body">
+                                <h3>Allergies</h3>
+                                <p>1. Peanut allergy</p>
+                                <p>2. Dust mite allergy</p>
+                                <p>3. Insulin allergy</p>
+                                <h3>Medical Condition</h3>
+                                <p>1. Diabetes</p>
+                                <p>2. Hypertension (high blood pressure)</p>
+                                <h3>Vitals</h3>
+                                <p>1. Temperature</p>
+                                <p>Normal: 98.6°F (37°C)</p>
+
+                                <p>2. Pulse</p>
+
+                                <p>Normal: 60-100 beats per minute (bpm)</p>
+
+                                <p>3. Blood Pressure</p>
+
+                                <p>Normal: 90-120 mmHg and 60-80 mmHg (diastolic)</p>
+
+                            </div>
+                        </div>
+                    </td>
+                </tr>*@
+            </tbody>
+        </table>
+
+    </section>
+</form>
+
+<div style="min-height: 120px;">
+    <div class="collapse collapse-horizontal" id="collapseWidthExample">
+        <div class="card card-body" @*style="width: 300px;*@">
+            <form method="post">
+                <div class="row">
+                    <div class="col">
+                        <label for="exampleFormControlInput1" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Name">
+                    </div>
+                    <div class="col">
+                        <label for="exampleFormControlInput1" class="form-label">Surname</label>
+                        <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Surname">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="exampleFormControlInput1" class="form-label">Prescribed Medication Name</label>
+                    <select class="form-select form-select form-label">
+                        <option class="form-label" selected>Medication name</option>
+                        <option value="1">Panado</option>
+                        <option value="2">Aspirin</option>
+                        <option value="3">Brufen</option>
+                    </select>
+                </div>
+                
+                <div class="mb-3">
+                <label for="exampleFormControlInput1" class="form-label">Quantity</label>
+                <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Quantity">
+                </div>
+
+                <div class="mb-3">
+                <label for="exampleFormControlInput1" class="form-label">Dosage form</label>
+                <select class="form-select form-select form-label">
+                <option class="form-label" selected>Dosage form</option>
+                <option value="1">Capsule</option>
+                <option value="2">Tablet</option>
+                <option value="3">Syrup</option>
+                </select>
+                </div>
+                <div class="mb-3">
+                <label for="exampleFormControlInput1" class="form-label">Schedule</label>
+                <select class="form-select form-select form-label">
+                <option class="form-label" selected>Schedule</option>
+                <option value="1">One</option>
+                <option value="2">Two</option>
+                <option value="3">Three</option>
+                <option value="3">Four</option>
+                <option value="3">Five</option>
+                <option value="3">Six</option>
+                </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="exampleFormControlInput1" class="form-label">Administer time</label>
+                        <input type="datetime-local" class="form-control" id="exampleFormControlInput1" placeholder="Administer time">
+                    </div>
+
+                @*<button type="button" class="btn btn-primary">Add</button>*@
+                <button type="submit" class="btn btn-primary" asp-controller="Nurse" asp-action="AddVitals">Save</button>
+            </form>
+        </div>
+    </div>
+</div>

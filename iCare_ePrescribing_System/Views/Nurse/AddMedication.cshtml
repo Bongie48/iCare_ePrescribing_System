@@ -1,0 +1,178 @@
+﻿@model iCare_ePrescribing_System.ViewModels.Nurse.MedicationViewModel;
+
+@{
+    ViewData["Title"] = "AddMedication";
+    Layout = "_NursePharmaLayout";
+}
+
+<h2>Select Medications for @Model.Patient.Name</h2>
+
+<div class="row">
+    <div class="col-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Add Medication</h5>
+            </div>
+            <div class="card-body">
+
+                <form asp-action="SelectMedications" method="post">
+                    <!-- Hidden input for PatientId -->
+                    <input type="hidden" asp-for="Patient.PatientId" />
+
+                    <div class="form-group">
+                        <label>Select Medication:</label>
+                        <select id="medicationDropdown" class="form-control">
+                            <option value="">-- Select Medication --</option>
+                            @foreach (var medication in Model.medications)
+                            {
+                                <option value="@medication.MedicationId">@medication.MedicationName</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="quantityInput">Quantity (Dosage):</label>
+                        <input type="number" id="quantityInput" class="form-control" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="instructionsInput">InTake Instructions:</label>
+                        <input type="text" id="instructionsInput" class="form-control" />
+                    </div>
+
+                    <button type="button" class="btn btn-secondary" onclick="addMedication()">Add Medication to List</button>
+
+                    <!-- Table to show added medications -->
+                    <table class="table table-striped mt-3" id="medicationsTable">
+                        <thead>
+                            <tr>
+                                <th>Medication Name</th>
+                                <th>Quantity</th>
+                                <th>InTake Instructions</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.PatientMedicationList.Count; i++)
+                            {
+                                <tr>
+                                    <td>
+                                        @Model.medications.FirstOrDefault(m => m.MedicationId == Model.PatientMedicationList[i].MedicationId)?.MedicationName
+                                        <input type="hidden" asp-for="PatientMedicationList[@i].MedicationId" />
+                                    </td>
+                                    <td>
+                                        <input type="hidden" asp-for="PatientMedicationList[@i].Quantity" />
+                                        @Model.PatientMedicationList[i].Quantity
+                                    </td>
+                                    <td>
+                                        <input type="hidden" asp-for="PatientMedicationList[@i].InTakeInstructions" />
+                                        @Model.PatientMedicationList[i].InTakeInstructions
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-danger" onclick="removeMedication(this)">Remove</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <a class="btn btn-secondary mt-3" asp-action="PatientProfile" asp-route-id="@Model.Patient.PatientId">Profile</a>
+                    <button type="submit" class="btn btn-primary mt-3" asp-controller="Nurse" asp-action="AddMedication">Save Medications</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let medicationIndex = @Model.PatientMedicationList.Count;
+
+        function addMedication() {
+            let medicationDropdown = document.getElementById("medicationDropdown");
+            let selectedMedicationId = medicationDropdown.value;
+            let selectedMedicationText = medicationDropdown.options[medicationDropdown.selectedIndex].text;
+            let quantity = document.getElementById("quantityInput").value;
+            let instructions = document.getElementById("instructionsInput").value;
+
+            if (!selectedMedicationId || !quantity || !instructions) {
+                alert("Please select a medication, provide quantity and intake instructions.");
+                return;
+            }
+
+            // Check if the medication is already added
+            let existingMedication = document.querySelector(`input[value='${selectedMedicationId}']`);
+            if (existingMedication) {
+                alert("This medication is already selected.");
+                return;
+            }
+
+            // Add the medication to the table
+            let table = document.getElementById("medicationsTable").getElementsByTagName("tbody")[0];
+            let newRow = table.insertRow();
+
+            let cell1 = newRow.insertCell(0);
+            cell1.innerHTML = selectedMedicationText + `<input type="hidden" name="PatientMedicationList[${medicationIndex}].MedicationId" value="${selectedMedicationId}" />`;
+
+            let cell2 = newRow.insertCell(1);
+            cell2.innerHTML = quantity + `<input type="hidden" name="PatientMedicationList[${medicationIndex}].Quantity" value="${quantity}" />`;
+
+            let cell3 = newRow.insertCell(2);
+            cell3.innerHTML = instructions + `<input type="hidden" name="PatientMedicationList[${medicationIndex}].InTakeInstructions" value="${instructions}" />`;
+
+            let cell4 = newRow.insertCell(3);
+            cell4.innerHTML = `<button type="button" class="btn btn-danger" onclick="removeMedication(this)">Remove</button>`;
+
+            medicationIndex++;
+            // Clear inputs
+            medicationDropdown.value = "";
+            document.getElementById("quantityInput").value = "";
+            document.getElementById("instructionsInput").value = "";
+        }
+
+        function removeMedication(button) {
+            let row = button.closest('tr');
+            row.remove();
+        }
+    </script>
+}
+@*
+
+<h2 class="fs-5">Medication</h2>
+
+
+<div class="row">
+    <div class="col-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Add Medication</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    <div class="row">
+                        <div class="col">
+                            <label for="exampleFormControlInput1" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Name">
+                        </div>
+                        <div class="col">
+                            <label for="exampleFormControlInput1" class="form-label">Surname</label>
+                            <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Surname">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleFormControlInput1" class="form-label">Medication Name</label>
+                        <select class="form-select form-select form-label">
+                            <option class="form-label" selected>Medication name</option>
+                            <option value="1">Panado</option>
+                            <option value="2">Aspirin</option>
+                            <option value="3">Brufen</option>
+                        </select>
+                    </div>
+
+                    <button type="button" class="btn btn-primary">Add</button>
+                    <button type="submit" class="btn btn-primary" asp-controller="Nurse" asp-action="AddVitals">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div> *@
+

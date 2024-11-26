@@ -1,0 +1,75 @@
+﻿@*
+@{
+    ViewData["Title"] = "allergies";
+    Layout = "_NurseLayout";
+}
+<h2 class="fs-5"> allergies</h2>
+
+<div class="row">
+    <div class="col-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Add allergies</h5>
+            </div>
+
+        </div>
+    </div>
+</div*@>
+
+@{
+    ViewData["Title"] = "Allergies";
+    Layout = "_NurseLayout";
+}
+<h2 class="fs-5"> Patient Admission</h2>
+
+<div class="row g-3">
+    <div class="col-8">
+        <div class="card">
+            <div class="card-header">
+                <h5>Allergies</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    @*<div class="mb-3">
+                        <label for="exampleFormControlInput1" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Name">
+                    </div>*@
+
+                    <div class="row">
+                        <div class="col">
+                            <label for="exampleFormControlInput1" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Name">
+                        </div>
+                        <div class="col">
+                            <label for="exampleFormControlInput1" class="form-label">Surname</label>
+                            <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Surname">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="exampleFormControlInput1" class="form-label">Allergy Name</label>
+                        <select class="form-select form-select form-label">
+                            <option class="form-label" selected>Allergy</option>
+                            <option value="1">Nuts</option>
+                            <option value="2">Pork</option>
+                            <option value="3">Cheese</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleFormControlInput1" class="form-label">Categorgy</label>
+                        <select class="form-select form-select form-label">
+                            <option class="form-label" selected>Choose Category</option>
+                            <option value="1">Food allergy</option>
+                            <option value="2">Drug allergy</option>
+                        </select>
+                    </div>
+
+                    <a type="button" class="btn btn-outline-dark" asp-controller="Nurse" asp-action="admitPatient">Back</a>
+                    <button type="submit" class="btn btn-primary" asp-controller="Nurse" asp-action="AddCondition">Save</button>
+                    
+                </form>
+                
+            </div>
+        </div>
+    </div>
+</div>

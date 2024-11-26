@@ -1,0 +1,22 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using iCare_ePrescribing_System.Data
+@inject SignInManager<StaffMembers> SignInManager
+@inject UserManager<StaffMembers> UserManager
+@{
+    var user = await UserManager.FindByNameAsync(User.Identity.Name);
+}
+<ul class="navbar-nav">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <li class="nav-item">
+            <a asp-controller="User" asp-action="Edit" asp-route-id="@Model.userID" class="dropdown-item" style="color:black;">
+                <i class="fa-solid fa-user-edit me-2"></i> My Profile
+            </a>
+        </li>
+        <li class="nav-item">
+            <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                <button type="submit" class="nav-link btn btn-link text-dark">Logout</button>
+            </form>
+        </li>
+    }
+    </ul>

@@ -1,0 +1,189 @@
+﻿@model iCare_ePrescribing_System.ViewModels.OrdersVM
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore;
+@using iCare_ePrescribing_System.Data
+@inject SignInManager<StaffMembers> SignInManager
+@inject UserManager<StaffMembers> UserManager
+@inject ApplicationDbContext context
+@{
+    ViewData["Title"] = "Pharmacist Dashboard";
+    Layout = "PharmaLayout";
+    var user = await UserManager.FindByNameAsync(User.Identity.Name);
+    var prescriptionsitems = context.PrescriptionItem
+    .Include(x => x.medication)
+    .ToList();
+   
+}
+<style>
+    .text-muted {
+        color: #6c757d; /* Muted color for less emphasis */
+        font-style: italic; /* Example style */
+    }
+</style>
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<section id="wrapper">
+    <div class="welcome">
+        <div class="content rounded-3 p-3">
+            <h1 class="navbar-brand" href="#"> <span class="main-color">Prescription Report</span></h1>
+        </div>
+    </div>
+    <br />
+    <form class="form-control border-primary" asp-controller="Pharma" asp-action="Orders" method="get" style="background-color:whitesmoke;width:auto">
+        <h5 class="text-left">Prescription Report</h5>
+        <hr />
+        @if (TempData["error1"] != null)
+        {
+            <div class="alert alert-danger">
+                <strong>Note!</strong> @TempData["error1"]
+            </div>
+        }
+        <label>Date Range</label>
+        <div class="input-group mb-3">
+            <label><b>From:</b>&nbsp;&nbsp;</label>
+            <input type="date" name="startDate" class="form-control" value="@Model.StartDate?.ToString("yyyy-MM-dd")" />
+            <label>&nbsp;<b>To:</b>&nbsp;&nbsp;</label>
+            <input type="date" name="endDate" class="form-control" value="@Model.EndDate?.ToString("yyyy-MM-dd")" />
+            <input class="btn btn-secondary" type="submit" value="Search">&nbsp; &nbsp;
+            <a asp-controller="Pharma" asp-action="Orders" class="btn btn-outline-primary">View All</a> &nbsp; &nbsp;
+            <a asp-controller="Pharma" asp-action="StockCount" class="btn btn-success"
+               title="Please ensure to select the dates if you wish to generate a PDF for a specific date range."
+               onclick="this.href=this.href+'?startDate=' + document.querySelector('input[name=startDate]').value + '&endDate=' + document.querySelector('input[name=endDate]').value">
+                Download PDF
+            </a>
+        </div>
+       <section class="charts mt-4">
+            <div>
+                <p><i>Legend for priority Status Icons</i></p>
+                <ul>
+                    <li>
+                        <span style="font-size: 12px;">🔵</span>
+                        <strong>Meaning:</strong> The prescription is <em>not urgent</em>.
+                    </li>
+                    <li>
+                        <span style="font-size: 12px;">🔴</span>
+                        <strong>Meaning:</strong> The prescription is <em>urgent</em>.
+                    </li>
+                </ul>
+            </div>
+            <div class="table-responsive">
+                <table class="table caption-top">
+                    <caption>Report</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Patient Name</th>
+                            <th scope="col">Sent/Rejected Date</th>
+                            <th scope="col">Script By</th>
+                            <th scope="col">Prescribed Medication</th>
+                            <th scope="col">Priority Status</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var x in Model.Prescriptions)
+                        {
+                            <tr>
+                                <td>@x.Patient.Surname @x.Patient.Name </td>
+                                <td>@x.DateIssued.ToString("dd MMMM yyyy")</td>
+                                <td>@x.RegisteredStaff.Name @x.RegisteredStaff.Surname</td>
+                                <td>
+                                    @foreach (var item in Model.PrescriptionsItems)
+                                    {
+                                        if (item.PresID == x.PrescriptionId)
+                                        {
+                                            <p>• @item.medication.MedicationName <span class="text-muted">(Quantity: @item.Quantity)</span></p>
+
+                                        }
+                                    }
+                                </td>
+                                @if (x.UrgentStatus == 'n' || x.UrgentStatus == 'N')
+                                {
+                                    <td style='font-size:25px;'>🔵</td>
+                                }
+                                else
+                                {
+                                    <td style='font-size:25px;'>🔴</td>
+                                }
+                                <td>@x.TrackStatus</td>
+                                @if (x.TrackStatus == "Dispersed")
+                                {
+                                    Model.TotalDispersed = Model.TotalDispersed + 1;
+                                }
+                                else
+                                {
+                                    Model.TotalRejected = Model.TotalRejected + 1;
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <div class="col-sm-6 form-group">
+                    <label for="name-f">TOTAL SCRIPTS DISPENSED:&nbsp; &nbsp;@Model.TotalDispersed</label>
+                </div>
+                <div class="col-sm-6 form-group">
+                    <label for="name-f">TOTAL SCRIPTS REJECTED:&nbsp; &nbsp;@Model.TotalRejected</label>
+                </div>
+                @{
+
+                    var medicationTotals = new Dictionary<string, int>();
+
+                    foreach (var prescription in Model.Prescriptions.Where(p => p.TrackStatus == "Dispersed"))
+                    {
+                        var relatedItems = Model.PrescriptionsItems.Where(pi => pi.PresID == prescription.PrescriptionId);
+
+                        foreach (var item in relatedItems)
+                        {
+                            if (medicationTotals.TryGetValue(item.medication.MedicationName, out int currentTotal))
+                            {
+                                medicationTotals[item.medication.MedicationName] = currentTotal + item.Quantity;
+                            }
+                            else
+                            {
+                                medicationTotals[item.medication.MedicationName] = item.Quantity;
+                            }
+                        }
+                    }
+                    
+                }
+
+                <table class="table caption-top">
+                    <caption>Summary Per Medicine</caption>
+                    <thead>
+                        <tr>
+                            <th>Medicine</th>
+                            <th>Quantity Dispersed</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var entry in medicationTotals)
+                        {
+                            <tr>
+                                <td>@entry.Key</td>
+                                <td>@entry.Value</td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+
+            </div>
+
+        </section>
+    </form>
+</section>
+<script>
+    <script>
+        $(document).ready(function () {
+            $("#myInput").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $("#myTable tr").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+</script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+

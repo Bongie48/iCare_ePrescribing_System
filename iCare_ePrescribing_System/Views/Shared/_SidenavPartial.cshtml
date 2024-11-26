@@ -1,0 +1,123 @@
+﻿<div class="sidebar" id="side_nav">
+    <div class="header-box px-2 pt-3 pb-4 d-flex justify-content-between">
+        <h1 class="fs-4">
+            <span class="bg-white text-dark rounded shadow px-2 me-2">CL</span> <a class="text-white" asp-area="" asp-controller="Nurse" asp-action="Index">i-Care</a>
+        </h1>
+        <button class="btn d-md-none d-block close-btn px-1 py-0 text-white">
+            <i class="fal fa-stream"></i>
+        </button>
+    </div>
+    <ul class="list-unstyled px-2">
+        <li class="">
+            <a class="text-decoration-none px-3 py-2 d-block d-flex justify-content-between" asp-area="" asp-controller="Nurse" asp-action="Index">
+                <span><i class="fal fa-comment"></i>Dashboard</span>
+                @*<span class="bg-dark rounded-pill text-white py-0 px-2">02</span>*@
+            </a>
+        </li>
+        <li class="">
+            <a class="text-decoration-none px-3 py-2 d-block d-flex justify-content-between" asp-area="" asp-controller="Nurse" asp-action="admitedPatients">
+                <span><i class="fal fa-comment"></i>Admissions</span>
+                @*<span class="bg-dark rounded-pill text-white py-0 px-2">02</span>*@
+            </a>
+        </li>
+        <li class="">
+            <a class="text-decoration-none px-3 py-2 d-block d-flex justify-content-between" asp-area="" asp-controller="Nurse" asp-action="allergies">
+                <span><i class="fal fa-comment"></i>Allergies</span>
+                @*<span class="bg-dark rounded-pill text-white py-0 px-2">02</span>*@
+            </a>
+        </li>
+        <li class="">
+            <a class="text-decoration-none px-3 py-2 d-block d-flex justify-content-between" asp-area="" asp-controller="Nurse" asp-action="prescription">
+                <span><i class="fal fa-comment"></i>Prescriptions</span>
+                @*<span class="bg-dark rounded-pill text-white py-0 px-2">02</span>*@
+            </a>
+        </li>
+        @*<li class="">
+            <a class="text-decoration-none px-3 py-2 d-block d-flex justify-content-between" asp-area="" asp-controller="Nurse" asp-action="viewPatient">
+                <span><i class="fal fa-comment"></i>Patient Details</span>
+                <span class="bg-dark rounded-pill text-white py-0 px-2">02</span>
+            </a>
+        </li>*@
+    </ul>
+    <div class="text-decoration-none px-3 py-2 d-block" style=" color : white">
+        <p class="text-decoration-none px-3 py-2 d-block" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+            <i class="fal fa-bars"></i>Conditions
+        </p>
+    </div>
+    <div class="collapse" id="collapseExample">
+        <ul class="list-unstyled px-2">
+            <li class="">
+                <a class="text-decoration-none px-3 py-2 d-block d-flex justify-content-between" asp-area="" asp-controller="Nurse" asp-action="ViewCondition">
+                    <span><i class="fal fa-comment"></i>View Conditions</span>
+                    @*<span class="bg-dark rounded-pill text-white py-0 px-2">02</span>*@
+                </a>
+            </li>
+            <li class="">
+                <a class="text-decoration-none px-3 py-2 d-block d-flex justify-content-between" asp-area="" asp-controller="Nurse" asp-action="AddCondition">
+                    <span><i class="fal fa-comment"></i>Add Conditions</span>
+                    @*<span class="bg-dark rounded-pill text-white py-0 px-2">02</span>*@
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="text-decoration-none px-3 py-2 d-block" style=" color : white">
+        <p class="text-decoration-none px-3 py-2 d-block" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+            <i class="fal fa-bars"></i>Medication
+        </p>
+    </div>
+    <div class="collapse" id="collapseExample">
+            <ul class="list-unstyled px-2">
+                <li class="">
+                <a class="text-decoration-none px-3 py-2 d-block d-flex justify-content-between" asp-area="" asp-controller="Nurse" asp-action="ViewMedication">
+                        <span><i class="fal fa-comment"></i>View Medication</span>
+                        @*<span class="bg-dark rounded-pill text-white py-0 px-2">02</span>*@
+                    </a>
+                </li>
+                <li class="">
+                <a class="text-decoration-none px-3 py-2 d-block d-flex justify-content-between" asp-area="" asp-controller="Nurse" asp-action="AddMedication">
+                        <span><i class="fal fa-comment"></i>Add Medication</span>
+                        @*<span class="bg-dark rounded-pill text-white py-0 px-2">02</span>*@
+                    </a>
+                </li>
+            </ul>
+    </div>
+    <div class="text-decoration-none px-3 py-2 d-block" style=" color : white">
+        <p class="text-decoration-none px-3 py-2 d-block" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+            <i class="fal fa-bars"></i>Vitals
+        </p>
+    </div>
+    <div class="collapse" id="collapseExample">
+            <ul class="list-unstyled px-2">
+                <li class="">
+                <a class="text-decoration-none px-3 py-2 d-block d-flex justify-content-between" asp-area="" asp-controller="Nurse" asp-action="viewVitals">
+                        <span><i class="fal fa-comment"></i>View Vitals</span>
+                        @*<span class="bg-dark rounded-pill text-white py-0 px-2">02</span>*@
+                    </a>
+                </li>
+                <li class="">
+                <a class="text-decoration-none px-3 py-2 d-block d-flex justify-content-between" asp-area="" asp-controller="Nurse" asp-action="AddVitals">
+                        <span><i class="fal fa-comment"></i>Add Vitals</span>
+                        @*<span class="bg-dark rounded-pill text-white py-0 px-2">02</span>*@
+                    </a>
+                </li>
+            </ul>
+    </div>
+    <hr class="h-color mx-2">
+
+    <ul class="list-unstyled px-2">
+        <li class="">
+            <a href="#" class="text-decoration-none px-3 py-2 d-block">
+                <i class="fal fa-bars"></i>
+                Settings
+            </a>
+        </li>
+        <li class="">
+            <a href="#" class="text-decoration-none px-3 py-2 d-block">
+                <i class="fal fa-bell"></i>
+                Notifications
+            </a>
+        </li>
+
+    </ul>
+
+</div>

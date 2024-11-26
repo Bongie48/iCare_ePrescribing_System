@@ -1,0 +1,239 @@
+﻿@model iCare_ePrescribing_System.ViewModels.Nurse.PatientRecordsViewModel
+
+@{
+    ViewData["Title"] = "Nurse dashboard";
+    Layout = "_NursePharmaLayout";
+}
+
+<h2 class="fs-5"> Dashboard</h2>
+
+<div class="card">
+    <div class="card-body">
+        <div class="card-title">
+            <h5>Booked patients</h5>
+
+        </div>
+        <form id="filterForm" asp-controller="Nurse" asp-action="filterPatients" method="get">
+            <div class="form-group">
+                <label for="SelectedDate">Select Date</label>
+                <input type="date" id="SelectedDate" name="SelectedDate" value="@Model.SelectedDate?@* .ToString("YYYY/MM/dd") *@" class="form-control" />
+            </div>
+        </form>
+    </div>
+    <div id="patiensRecords">
+        @await Html.PartialAsync("_PatientRecords", Model)
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Load current records when the page is loaded
+            loadRecords();
+
+            // Set up an event listener for changes in the date input
+            $("#SelectedDate").on("change", function () {
+                loadRecords();
+            });
+
+            function loadRecords() {
+                var SelectedDate = $("#SelectedDate").val();
+                $.ajax({
+                    url: '@Url.Action("filterPatients", "Nurse")',
+                    type: 'GET',
+                    data: { SelectedDate: SelectedDate },
+                    success: function(result) {
+                        $("#patiensRecords").html(result);
+                    },
+                    error: function() {
+                        alert("Error filtering records.");
+                    }
+                });
+            }
+        });
+    </script>
+}
+
+<!-- Modal -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Admission Information</h1>
+                @*<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>*@
+            </div>
+            <div class="modal-body">
+
+                <div class="row gy-3">
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Personal Details</h5>
+
+                                <table class="table table-striped table-hover caption-top">
+                                    <thead>
+                                        <tr>
+                                            <th>Identity Number</th>
+                                            <th>First Name </th>
+                                            <th>surname </th>
+                                            <th>Address</th>
+                                            <th>Gender </th>
+                                            <th>Admition Time</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>9802035706081</td>
+                                            <td>Bongani </td>
+                                            <td>Maduma </td>
+                                            <td>Kings Student accomodation </td>
+                                            <td>Male </td>
+                                            <td>12:13</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row gy-3">
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Medical Condition</h5>
+                                @*<h6 class="card-subtitle mb-2 text-body-secondary">Card subtitle</h6>*@
+                                <table class="table table-striped table-hover caption-top">
+                                    @*<h5 class="card-title">
+                                    Conditions
+                                    </h5>*@
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Category</th>
+                                            @*<th>Description </th>*@
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Diabetes</td>
+                                            <td>Type 1 </td>
+                                            @*<td>a chronic (long-lasting) health condition that affects how your body turns food into energy </td>*@
+                                        </tr>
+                                        <tr>
+                                            <td>Cancer</td>
+                                            <td>Cancer </td>
+                                            @*<td>A disease in which abnormal cells divide uncontrollably and destroy body tissue. </td>*@
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row gy-3">
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Current Medication</h5>
+                                @* <h6 class="card-subtitle mb-2 text-body-secondary">Card subtitle</h6>*@
+                                <table class="table table-striped table-hover caption-top">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Quantity</th>
+                                            <th>Dosage form </th>
+                                            <th>Shedule</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Paracetamol</td>
+                                            <td>20mg </td>
+                                            <td>Capsule </td>
+                                            <td>one </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Aspiring</td>
+                                            <td>20mg </td>
+                                            <td>Tablet </td>
+                                            <td>two </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <a type="button" class="btn btn-primary" asp-controller="Nurse" asp-action="prescription">Prescribed Medication</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div classs="row gy-3">
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body">
+                                <table class="table table-striped table-hover caption-top">
+                                    <h5 class="card-title">
+                                        Vitals
+                                    </h5>
+                                    <thead>
+                                        <tr>
+                                            <th>Patient Name</th>
+                                            <th>Patient Surname</th>
+                                            <th>Vital Name</th>
+                                            <th>Readings</th>
+                                            <th>Time</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Bongani</td>
+                                            <td>Maduma </td>
+                                            <td>Temperature </td>
+                                            <td>36 </td>
+                                            <td>12:24 </td>
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+                                <a type="button" class="btn btn-primary" asp-controller="Nurse" asp-action="Retake">Retake</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row gy-3">
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body">
+                                @*<h5 class="card-title">Discharge</h5>*@
+                                <h6 class="card-subtitle mb-2 text-body-secondary">Discharge Patient</h6>
+
+                                <form method="post">
+                                    <div class="mb-3">
+                                        <label for="exampleFormControlInput1" class="form-label">Discharge time</label>
+                                        <input type="datetime-local" class="form-control" id="exampleFormControlInput1" placeholder="Discharge">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary" asp-controller="Nurse" asp-action="allergies">Discharge</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                @*<button type="button" class="btn btn-primary">Understood</button>*@
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+

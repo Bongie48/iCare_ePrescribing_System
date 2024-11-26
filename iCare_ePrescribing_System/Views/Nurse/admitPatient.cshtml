@@ -1,0 +1,201 @@
+﻿@model iCare_ePrescribing_System.ViewModels.Nurse.AdmissionViewModel
+
+@{
+    ViewData["Title"] = "admitPatient";
+    Layout = "_NursePharmaLayout";
+}
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert @(TempData["MessageType"]?.ToString() == "success" ? "alert-success" : "alert-danger") alert-dismissible fade show" role="alert">
+        @TempData["Message"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
+
+<h2 class="fs-5"> Patient Admission</h2>
+
+<div class="row g-3">
+    <div class="col-8">
+        <div class="card">
+            <div class="card-header">
+                <h5>Addmit Patient</h5>
+            </div>
+            <div class="card-body">
+                <form asp-controller="Nurse" asp-action="adm" method="post">
+                   <div class="row">
+                        <div class="col">
+                            <label class="form-label">Name</label>
+                            <input type="text" class="form-control" asp-for="Patient.Name" value="@Model.Patient.Name" disabled>
+                        </div>
+                        <div class="col">
+                            <label class="form-label">Surname</label>
+                            <input type="text" class="form-control"  asp-for="Patient.Surname" value="@Model.Patient.Surname" disabled>
+                        </div>
+                   </div>
+
+                   <div class="row">
+                        <div class="col-6">
+                            <label class="form-label">ID Number</label>
+                            <input type="text" class="form-control" asp-for="Patient.Surname" value="@Model.Patient.IDNo" disabled>
+                        </div>
+                        <div class="col-6">
+                            <label  class="form-label">Contact Number</label>
+                            <input type="number" class="form-control" placeholder="Contact Number" asp-for="Patient.ContactNumber" value="@Model.Patient.ContactNumber" >
+                        </div>
+                   </div>
+                   <div class="row">
+                        <div class="col">
+                            <label  class="form-label">Email</label>
+                            <input type="email" class="form-control" placeholder="Email" asp-for="Patient.Email">
+                        </div>
+                   </div>
+                   <div class="row">
+                        <div class="col-6">
+                            <label  class="form-label">Height</label>
+                            <input type="number" class="form-control"  asp-for="Admissions.Height" value="@Model.Admissions.Height" placeholder="Height">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">Weight</label>
+                            <input type="number" class="form-control" asp-for="Admissions.Weight" value="@Model.Admissions.Weight" placeholder="Weight">
+                        </div>
+                   </div>
+                    <div class="row">
+
+                        <div class="col">
+                            <label for="SelectedProvinceId" class="form-label">Select Province</label>
+                            @Html.DropDownListFor(m => m.SelectedProvinceId, Model.ProvinceList, "Select a province", new { @class = "form-control", id = "SelectedProvinceId" })
+                        </div>
+
+                        <div class="col">
+                            <label for="SelectedCityId" class="form-label">Select City</label>
+                            <select id="SelectedCityId" class="form-control">
+                                <option value="" class="form-label">Select a city</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <label for="SelectedSuburbId" class="form-label">Select Suburb</label>
+                            <select id="SelectedSuburbId" class="form-control" asp-for="Patient.SuburbId">
+                                <option value="" class="form-label">Select a suburb</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <label class="form-label">Home Address</label>
+                            <input type="text" class="form-control" asp-for="Patient.HomeAddress">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleFormControlInput1" class="form-label">Admission date</label>
+                        <input type="datetime-local" class="form-control" id="exampleFormControlInput1" placeholder="Admission date" asp-for="Admissions.AdmissionDate">
+                    </div>
+                    @* <div class="mb-3">
+                        <label for="exampleFormControlInput1" class="form-label">Admission Time</label>
+                        <input type="time" class="form-control" id="exampleFormControlInput1" placeholder="Admission time">
+                    </div> *@
+                    <div class="row">
+                        <div class="col">
+                            <label for="SelectedWardId" class="form-label">Select Ward:</label>
+                            @Html.DropDownListFor(model => model.SelectedWardId, Model.WardList, "-- Select Ward --", new { @class = "form-select form select form-label", id = "SelectedWardId" })
+                        </div>
+
+                        <div class="col">
+                            <label for="SelectedBedId" class="form-label">Select Bed:</label>
+                            <select id="SelectedBedId" class="form-select form-select form-label" asp-for="Admissions.BedID">
+                                <option value="" class="form-label">-- Select Bed --</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" asp-controller="Nurse" asp-action="admitPatient">Admit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            $('#SelectedWardId').change(function () {
+                var wardId = $(this).val();
+                if (wardId) {
+                    $.ajax({
+                        url: '@Url.Action("GetBedsByWard", "Nurse")',
+                        type: 'POST',
+                        data: { wardId: wardId },
+                        success: function (response) {
+                            $('#SelectedBedId').empty();
+                            $('#SelectedBedId').append($('<option>').text('-- Select Bed --').attr('value', ''));
+
+                            $.each(response, function (index, bed) {
+                                $('#SelectedBedId').append($('<option>').text(bed.text).attr('value', bed.value));
+                            });
+                        },
+                        error: function () {
+                            alert('Error retrieving beds.');
+                        }
+                    });
+                } else {
+                    $('#SelectedBedId').empty();
+                    $('#SelectedBedId').append($('<option>').text('-- Select Bed --').attr('value', ''));
+                }
+            });
+
+            $('#SelectedProvinceId').change(function () {
+                var provinceId = $(this).val();
+                if (provinceId) {
+                    $.ajax({
+                        url: '@Url.Action("GetCities", "Nurse")',
+                        type: 'POST',
+                        data: { provinceId: provinceId },
+                        success: function (data) {
+                            $('#SelectedCityId').empty();
+                            $('#SelectedCityId').append($('<option>').text('Select a city').val(''));
+                            $('#SelectedSuburbId').empty();
+                            $('#SelectedSuburbId').append($('<option>').text('-- Select a Suburb --').attr('value', ''));
+                            $.each(data, function (index, city) {
+                                $('#SelectedCityId').append($('<option>').text(city.text).attr('value', city.value));
+                            });
+
+
+                        }
+                    });
+                } else {
+                    $('#SelectedCityId').empty();
+                    $('#SelectedCityId').append($('<option>').text('-- Select a city --').attr('value', ''));
+
+                    $('#SelectedSuburbId').empty();
+                    $('#SelectedSuburbId').append($('<option>').text('-- Select a Suburb --').attr('value', ''));
+                }
+            });
+
+            $('#SelectedCityId').change(function () {
+                var cityId = $(this).val();
+                if (cityId) {
+                    $.ajax({
+                        url: '@Url.Action("GetSuburbs", "Nurse")',
+                        type: 'POST',
+                        data: { cityId: cityId },
+                        success: function (data) {
+                            $('#SelectedSuburbId').empty();
+                            $('#SelectedSuburbId').append($('<option>').text('Select a Suburb').val(''));
+                            $.each(data, function (index, suburb) {
+                                $('#SelectedSuburbId').append($('<option>').text(suburb.text).attr('value', suburb.value));
+                            });
+                        }
+                    });
+                }
+                else {
+                    $('#SelectedSuburbId').empty();
+                    $('#SelectedSuburbId').append($('<option>').text('-- Select a Suburb --').attr('value', ''));
+                }
+            });
+
+        });
+    </script>
+}

@@ -1,0 +1,83 @@
+﻿@model iCare_ePrescribing_System.ViewModels.Nurse.PrescribedMedicationViewModel
+
+@{
+    ViewData["Title"] = "Administered Medication";
+    Layout = "_NursePharmaLayout";
+
+    // Determine the remaining quantity and if it's zero or null
+    int remainingQuantity = Model.PrescriptionItem.RemaininingQuantity ?? Model.PrescriptionItem.Quantity;
+    bool isQuantityZero = remainingQuantity <= 0;
+}
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Administer Medication</h2>
+
+    <!-- Card for Summary and Form -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Administer Medication for <span>@Model.PrescriptionItem.Prescription.Patient.Name</span> <span>@Model.PrescriptionItem.Prescription.Patient.Surname</span></h4>
+        </div>
+        <div class="card-body">
+            <!-- Summary of Prescription Item -->
+            <h5 class="card-title">Medication Summary</h5>
+            <div class="mb-4 border p-3 rounded bg-light">
+                <p><strong>Medication Name:</strong> @Model.PrescriptionItem.medication.MedicationName</p>
+                <p><strong>Instructions:</strong> @Model.PrescriptionItem.instruction</p>
+                <p><strong>Quantity Prescribed:</strong> @Model.PrescriptionItem.Quantity</p>
+                <p><strong>Remaining Quantity:</strong> @(remainingQuantity > 0 ? remainingQuantity.ToString() : "N/A")</p>
+            </div>
+
+            <!-- Form for Administering Medication -->
+            <h5 class="card-title">Administer Medication</h5>
+            <form asp-action="PrescribedMedication" method="post">
+                <div class="form-group">
+                    <label for="quantityAdministered">Quantity Administered</label>
+                    <input min="1" max="@Model.PrescriptionItem.Quantity" type="number" 
+                           name="PrescribedMedication.QuantityAdministered" 
+                           class="form-control" 
+                           id="quantityAdministered" 
+                           required @(isQuantityZero ? "disabled" : "") />
+                </div>
+
+                <div class="form-group">
+                    <label for="timeAdministered">Time Administered</label>
+                    <input type="datetime-local" 
+                           name="PrescribedMedication.TimeAdministered" 
+                           class="form-control" 
+                           id="timeAdministered" 
+                           required @(isQuantityZero ? "disabled" : "") />
+                </div>
+
+                <div class="form-group">
+                    <label for="notes">Instructions/Notes</label>
+                    <textarea name="PrescribedMedication.Notes" 
+                              class="form-control" 
+                              id="notes" 
+                              rows="3" 
+                              placeholder="Add any additional notes..."
+                              @(isQuantityZero ? "disabled" : "")></textarea>
+                </div>
+
+                <!-- Hidden input fields for necessary data -->
+                <input type="hidden" asp-for="PrescriptionItem.itemId" value="@Model.PrescriptionItem.itemId" />
+                <input type="hidden" asp-for="PrescribedMedication.PatientId" value="@Model.PrescriptionItem.Prescription.PatientId" />
+                <input type="hidden" asp-for="PrescribedMedication.Nurse" value="@Model.PrescribedMedication.Nurse" />
+
+                <div class="text-start">
+                    <br />
+                    <a class="btn btn-secondary btn-lg" asp-action="PatientProfile" asp-route-id="@Model.PrescriptionItem.Prescription.Patient.PatientId">Profile</a>
+                    @if (isQuantityZero)
+                    {
+                        <button type="submit" asp-action="PrescribedMedication" class="btn btn-primary btn-lg" disabled>Submit</button>
+                    }
+                    else
+                    {
+                        <button type="submit" asp-action="PrescribedMedication" class="btn btn-primary btn-lg">Submit</button>
+                    }
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+

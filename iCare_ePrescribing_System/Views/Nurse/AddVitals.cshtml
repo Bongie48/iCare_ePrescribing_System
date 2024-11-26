@@ -1,0 +1,140 @@
+﻿@model iCare_ePrescribing_System.ViewModels.Nurse.VitalsViewModel;
+
+@{
+    ViewData["Title"] = "AddVitals";
+    Layout = "_NursePharmaLayout";
+}
+
+<h2>Record Vitals for Patient @Model.Patient.Name</h2>
+
+<div class="row">
+    <div class="col-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Add Vitals</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="AddVitals" method="post">
+                    <!-- Hidden input for AdmissionID -->
+                    <input type="hidden" asp-for="Admission.AdmisionID" />
+                    <!-- Hidden input for PatientID -->
+                    <input type="hidden" asp-for="Patient.PatientId" />
+
+                    <div class="form-group">
+                        <label>Select Vital:</label>
+                        <select id="vitalDropdown" class="form-control">
+                            <option value="">-- Select Vital --</option>
+                            @foreach (var vital in Model.Vitals)
+                            {
+                                <option value="@vital.VitalId">@vital.Name</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="readingInput">Vital Reading:</label>
+                        <input type="text" id="readingInput" class="form-control" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="captureTimeInput">Capture Time:</label>
+                        <input type="datetime-local" id="captureTimeInput" class="form-control" />
+                    </div>
+
+                    <button type="button" class="btn btn-secondary" onclick="addVital()">Add Vital to List</button>
+
+                    <!-- Table to show added vitals -->
+                    <table class="table table-striped mt-3" id="vitalsTable">
+                        <thead>
+                            <tr>
+                                <th>Vital Name</th>
+                                <th>Reading</th>
+                                <th>Capture Time</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.PatientVitals.Count; i++)
+                            {
+                                <tr>
+                                    <td>
+                                        @Model.Vitals.FirstOrDefault(v => v.VitalId == Model.PatientVitals[i].VitalId)?.Name
+                                        <input type="hidden" asp-for="PatientVitals[@i].VitalId" />
+                                    </td>
+                                    <td>
+                                        <input type="hidden" asp-for="PatientVitals[@i].Readings" />
+                                        @Model.PatientVitals[i].Readings
+                                    </td>
+                                    <td>
+                                        <input type="hidden" asp-for="PatientVitals[@i].CaptureTime" />
+                                        @Model.PatientVitals[i].CaptureTime.ToString("yyyy-MM-ddTHH:mm")
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-danger" onclick="removeVital(this)">Remove</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <a class="btn btn-secondary mt-3" asp-action="PatientProfile" asp-route-id="@Model.Patient.PatientId">Profile</a>
+                    <button type="submit" class="btn btn-primary mt-3" asp-controller="Nurse" asp-action="AddVitals">Save Vitals</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <script>
+        let vitalIndex = @Model.PatientVitals.Count;
+
+        function addVital() {
+            let vitalDropdown = document.getElementById("vitalDropdown");
+            let selectedVitalId = vitalDropdown.value;
+            let selectedVitalText = vitalDropdown.options[vitalDropdown.selectedIndex].text;
+            let reading = document.getElementById("readingInput").value;
+            let captureTime = document.getElementById("captureTimeInput").value;
+
+            if (!selectedVitalId || !reading || !captureTime) {
+                alert("Please select a vital, enter a reading, and specify a capture time.");
+                return;
+            }
+
+            // Check if the vital is already added
+            let existingVital = document.querySelector(`input[value='${selectedVitalId}']`);
+            if (existingVital) {
+                alert("This vital is already selected.");
+                return;
+            }
+
+            // Add the vital to the table
+            let table = document.getElementById("vitalsTable").getElementsByTagName("tbody")[0];
+            let newRow = table.insertRow();
+
+            let cell1 = newRow.insertCell(0);
+            cell1.innerHTML = selectedVitalText + `<input type="hidden" name="PatientVitals[${vitalIndex}].VitalId" value="${selectedVitalId}" />`;
+
+            let cell2 = newRow.insertCell(1);
+            cell2.innerHTML = reading + `<input type="hidden" name="PatientVitals[${vitalIndex}].Readings" value="${reading}" />`;
+
+            let cell3 = newRow.insertCell(2);
+            cell3.innerHTML = captureTime + `<input type="hidden" name="PatientVitals[${vitalIndex}].CaptureTime" value="${captureTime}" />`;
+
+            let cell4 = newRow.insertCell(3);
+            cell4.innerHTML = `<button type="button" class="btn btn-danger" onclick="removeVital(this)">Remove</button>`;
+
+            vitalIndex++;
+            // Clear inputs
+            vitalDropdown.value = "";
+            document.getElementById("readingInput").value = "";
+            document.getElementById("captureTimeInput").value = "";
+        }
+
+        function removeVital(button) {
+            let row = button.closest('tr');
+            row.remove();
+        }
+    </script>
+}

@@ -1,0 +1,183 @@
+﻿@model iCare_ePrescribing_System.ViewModels.UpdateMedIngredientVM
+@using Microsoft.AspNetCore.Identity
+@using iCare_ePrescribing_System.Data
+@inject SignInManager<StaffMembers> SignInManager
+@inject UserManager<StaffMembers> UserManager
+@{
+    ViewData["Title"] = "Update Medication";
+    Layout = "PharmaLayout";
+    string ProfilePicture = " ";
+    if (Model.profile != null)
+    {
+        ProfilePicture = Model.profile;
+    }
+    var user = await UserManager.FindByNameAsync(User.Identity.Name);
+}
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<section id="wrapper">
+    <div class="p-4">
+        <div class="welcome">
+            <div class="content rounded-3 p-3">
+                <h1 class="navbar-brand" href="#"> <span class="main-color">Medication</span></h1>
+
+            </div>
+        </div>
+        <br />
+        <form class="form-control border-primary" class="row g-3" asp-controller="Pharma" asp-action="UpdateMed" style="background-color:whitesmoke">
+            <section class="charts mt-3">
+                <h5>Edit Medication Details</h5>
+                <hr />
+                @if (TempData["MedicineIngredients"] != null)
+                {
+                    <div class="alert alert-success">
+                        <strong>Note ! </strong>@TempData["MedicineIngredients"]
+                    </div>
+                }
+                <table class="table caption-top">
+                    <thead>
+                        <tr>
+                            <div class="col-sm-6 form-group">
+                                <label for="name-f">Medication Name</label>
+                                <input type="text" asp-for="@Model.Name" class="form-control" required>
+                            </div>
+                        </tr>
+                        <tr>
+                            <div class="col-sm-6 form-group">
+                                <label for="name-f">Re-Order Level</label>
+                                <input type="number" asp-for="@Model.reorder" class="form-control" required>
+                            </div>
+                        </tr>
+                        <tr>
+                            <div class="col-sm-6 form-group">
+                                <input asp-for="@Model.status" class="form-control" hidden>
+                            </div>
+                        </tr>
+                        <tr>
+                            <div class="col-sm-6 form-group">
+                                <label for="Country">Dosage Form</label>
+                                <select class="form-control custom-select browser-default" asp-for="@Model.dosage" asp-items="@Model.dosageform">
+                                    <option value="">--Select--</option>
+                                </select>
+                            </div>
+                        </tr>
+                        <tr>
+                            <div class="col-sm-6 form-group">
+                                <label for="name-f">Medication Schedule</label>
+                                <select class="form-control custom-select browser-default" asp-for="@Model.schedule" asp-items="@Model.Medschedule">
+                                    <option value="">--Select--</option>
+                                </select>
+                            </div>
+                        </tr>
+                        <table asp-action="UpdateMed" class="table caption-top">
+                            @foreach (var x in Model.active)
+                            {
+
+                                if (x != null && x.medicineid == Model.medicationID)
+                                {
+                                    <tr>
+                                    <td><i>@x.ActiveIngredient.ActiveName</i></td>
+                                        <td>@x.Strength mg</td>
+                                    </tr>
+                                }
+                            }
+
+                        </table>
+                        <hr />
+                    </thead>
+                    <tr>
+                        <td>
+                            <div class="col-12">
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                                    Edit Active Ingredients
+                                </button>
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </section>
+            <input asp-for="@Model.medicationID" type="text" value="@Model.medicationID" hidden />
+            <input asp-for="@Model.status" class="form-control" hidden>
+            <input asp-for="@Model.quantity" value="@Model.quantity"class="form-control" hidden>
+            <input asp-for="@Model.image" value="@Model.image" class="form-control" hidden>
+        </form>
+        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Medication Active Ingredients</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form class="form-control border-primary" class="row g-3" asp-controller="Pharma" asp-action="UpdateIngredients" style="background-color:whitesmoke;">
+
+                            <table  class="table caption-top">
+                                <tr>
+                                    <td>
+                                        @Model.Name
+                                    </td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                @foreach (var x in Model.active)
+                                {
+
+                                    if (x != null && x.medicineid == Model.medicationID)
+                                    {
+                                        if (Model.trackmedication == 1)
+                                        {
+                                            <tr>
+                                                <td><i>@x.ActiveIngredient.ActiveName</i></td>
+                                                <td>@x.Strength mg</td>
+                                                <td>
+                                                    <a class="btn btn-danger" asp-controller="Pharma" asp-action="UpdateMedIngredient" asp-route-id="@x.MedIngredientId" style="pointer-events: none; opacity: 0.5;"><i class="fa-solid fa-x"></i></a>
+                                                </td>
+                                            </tr>
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td><i>@x.ActiveIngredient.ActiveName</i></td>
+                                                <td>@x.Strength mg</td>
+                                                <td>
+                                                    <a class="btn btn-danger" asp-controller="Pharma" asp-action="UpdateMedIngredient" asp-route-id="@x.MedIngredientId"><i class="fa-solid fa-x"></i></a>
+                                                </td>
+                                            </tr>
+                                        }
+
+                                    }
+                                }
+
+                            </table>
+                            <section class="charts mt-3">
+                                <input asp-for="@Model.medicationIngredient.medicineid" value="@Model.medicationID" hidden/>
+                                <div class="col-sm-6 form-group">
+                                    <label for="Country">Ingredient Name</label>
+                                    <select class="form-control custom-select browser-default" asp-for="@Model.medicationIngredient.activeid" asp-items="@Model.ingredientname" required>
+                                        <option value="">--Select--</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-6 form-group">
+                                    <label for="name-f">Ingredient Strength</label>
+                                    <input type="number" asp-for="@Model.medicationIngredient.Strength" class="form-control" placeholder="Enter ingredient strength" required>
+                                </div>
+                                <br />
+                                <div class="col-12">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    &nbsp;
+                                    <button type="submit" class="btn btn-primary">Submit Ingredient</button>
+                                </div>
+                            </section>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</section>
+
+

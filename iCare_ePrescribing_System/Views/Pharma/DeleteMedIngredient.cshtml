@@ -1,0 +1,109 @@
+﻿@*@model iCare_ePrescribing_System.Models.MedicationIngredient
+@{
+    ViewData["Title"] = "Medication";
+    Layout = "PharmaLayout";
+    string special = "@gmail.com", special1 = "@outlook.com", special2 = "@mandela.ac.za", special3 = "@nompilo.co.za";
+    string name = User.Identity?.Name.ToString();
+    if (name.ToLowerInvariant().Contains(special))
+    {
+        name = name.Replace(special, " ");
+    }
+    else if (name.ToLowerInvariant().Contains(special1))
+    {
+        name = name.Replace(special1, " ");
+    }
+    else if (name.ToLowerInvariant().Contains(special2))
+    {
+        name = name.Replace(special2, " ");
+    }
+    else if (name.ToLowerInvariant().Contains(special3))
+    {
+        name = name.Replace(special3, " ");
+    }
+    
+}
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<aside class="sidebar position-fixed top-0 left-0 overflow-auto h-100 float-left" id="show-side-navigation1">
+    <i class="uil-bars close-aside d-md-none d-lg-none" data-close="show-side-navigation1"></i>
+    <div class="sidebar-header d-flex justify-content-center align-items-center px-3 py-4">
+        <img class="rounded-pill img-fluid"
+             width="65"
+             src=""
+             alt="">
+        <div class="ms-2">
+            <h5 class="fs-6 mb-0">
+                <a class="text-decoration-none" href="#">@name</a>
+            </h5>
+        </div>
+    </div>
+    <ul class="categories list-unstyled" style="color:black">
+        <li class="has-dropdown">
+            <i class="fa-solid fa-house"></i><a asp-controller="Dashboard" asp-action="Pharmacist" style="color:black">Home</a>
+        </li>
+        <h7>Medication</h7>
+        <li class="has-dropdown">
+            <i class="fa-solid fa-notes-medical"></i>
+            <a asp-controller="Pharma" asp-action="Medication" style="color:black">Add Medication</a>
+        </li>
+        <li class="has-dropdown" style="background-color:#DCDCDC;">
+            <i class="fa-solid fa-filter"></i>
+            <a asp-controller="Pharma" asp-action="MedicineIngredients" style="color:black">Add Ingredients</a>
+        </li>
+        <li class="has-dropdown">
+            <i class="fa-solid fa-tablets"></i>
+            <a asp-controller="Pharma" asp-action="ViewMed" style="color:black">View Medication</a>
+        </li>
+        <h7>Prescription</h7>
+        <li class="has-dropdown">
+            <i class="fa-solid fa-prescription-bottle-medical"></i><a asp-controller="Pharma" asp-action="Prescription" style="color:black">View Active Prescriptions</a>
+        </li>
+        <li class="has-dropdown">
+            <i class="fa-solid fa-calendar-days"></i><a asp-controller="Pharma" asp-action="ViewDespensed" style="color:black">View Prescription History</a>
+        </li>
+        <h7>Stock Management</h7>
+        <li class="has-dropdown">
+            <i class="fa-solid fa-arrow-up-wide-short"></i>
+            <a asp-controller="Pharma" asp-action="ViewOrder" style="color:black">Order Stock</a>
+        </li>
+        <li class="has-dropdown">
+            <i class="fa-solid fa-arrow-trend-up"></i>
+            <a asp-controller="Pharma" asp-action="Stock" style="color:black">View Stock Order History</a>
+        </li>
+        <li class="has-dropdown">
+            <i class="fa-solid fa-plus"></i>
+            <a asp-controller="Pharma" asp-action="CaptureStock" style="color:black">Capture Stock</a>
+        </li>
+        <li class="has-dropdown">
+            <i class="fa-solid fa-right-from-bracket"></i><a> Log Out</a>
+        </li>
+    </ul>
+</aside>
+<section id="wrapper">
+    <div class="p-4">
+        <div class="welcome">
+            <div class="content rounded-3 p-3">
+                <h1 class="navbar-brand" href="#"> <span class="main-color">Medication</span></h1>
+            </div>
+        </div>
+        <br />
+        <form class="form-control border-primary" class="row g-3" asp-controller="Pharma" asp-action="DeleteMedIngredient" style="background-color:whitesmoke;">
+            <input type="number" asp-for="@Model.MedIngredientId" class="form-control" disabled>
+            <section class="charts mt-3">
+                <h5>Add Medication Ingredients</h5>
+                <hr />
+                <div class="col-sm-6 form-group" hidden>
+                    <input type="number" asp-for="@Model.medicineid" class="form-control" disabled>
+                </div>
+                <div class="col-sm-6 form-group">
+                    <input type="number" asp-for="@Model.activeid" class="form-control" disabled>
+                </div>
+                <div class="col-sm-6 form-group">
+                    <input type="number" asp-for="@Model.Strength" class="form-control" disabled>
+                </div>
+                <br />
+            </section>
+        </form>
+    </div>
+</section>*@

@@ -1,0 +1,119 @@
+﻿@using iCare_ePrescribing_System.ViewModels
+@model UserViewModel
+@using Microsoft.AspNetCore.Identity
+@using iCare_ePrescribing_System.Data
+@inject SignInManager<StaffMembers> SignInManager
+@inject UserManager<StaffMembers> UserManager
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "PharmaLayout";
+    Model.ProfilePhoto = null;
+    var user = await UserManager.FindByNameAsync(User.Identity.Name);
+}
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<section id="wrapper">
+<div class="container mt-3">
+        <div class="welcome">
+            <div class="content rounded-3 p-3">
+                <h1 class="navbar-brand" href="#"> <span class="main-color">Profile</span></h1>
+            </div>
+        </div>
+        <br />
+        <form class="form-control border-primary" style="background-color:whitesmoke" class="row g-3" asp-action="Edit" enctype="multipart/form-data">
+        <div class="row jumbotron box8">
+            <input type="hidden" asp-for="@Model.Id" />
+                
+                <input asp-for="@Model.image"  class="form-control" hidden>
+                <h5>Edit Profile</h5>
+                <hr />
+                @if (TempData["ErrorPassword"] != null)
+                {
+                    <div class="alert alert-danger">
+                        <strong>Note ! </strong>@TempData["ErrorPassword"]
+                    </div>
+                }
+                @if (TempData["ErrorPassword1"] != null)
+                {
+                    <div class="alert alert-danger">
+                        <strong>Note ! </strong>@TempData["ErrorPassword1"]
+                    </div>
+                }
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger">
+                        <strong>Note ! </strong>@TempData["Error"]
+                    </div>
+                }
+                
+            <div class="col-sm-6 form-group">
+                <label>First Name</label>
+                <input asp-for="@Model.Name" type="text" class="form-control" required>
+            </div>
+            <div class="col-sm-6 form-group">
+                <label>Last name</label>
+                <input asp-for="@Model.Surname" type="text" class="form-control" placeholder="Enter employee surname." required>
+            </div>
+            <div class="col-sm-6 form-group">
+                <label>Email</label>
+                <input asp-for="@Model.Email" type="email" class="form-control" placeholder="Enter your email." required>
+            </div>
+            <div class="col-sm-6 form-group">
+                <label>Date Of Birth</label>
+                <input asp-for="@Model.BirthDate" type="Date" class="form-control" placeholder="" required>
+            </div>
+            <div class="col-sm-6 form-group">
+                <label>Gender</label>
+                <select asp-for="@Model.Gender" class="form-control browser-default custom-select" required>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="unspesified">Do not Specify</option>
+                </select>
+            </div>
+            <div class="col-sm-6 form-group">
+                <label >Cellphone Number</label>
+                    <input asp-for="@Model.Number" type="number" class="form-control" minlength="10" maxlength="10" required>
+            </div>
+            <div class="col-sm-6 form-group">
+                    <label>Health Council Registration Number</label>
+                <input asp-for="@Model.HealthCouncilRegistrationNumber" type="text" class="form-control" readonly>
+            </div>
+                <div class="col-sm-6 form-group">
+                    <label>Current Password</label>
+                    <input asp-for="@Model.CurrentPassword" type="password" class="form-control" placeholder="Enter Current Password" >
+                </div>
+                <div class="col-sm-6 form-group">
+                    <label>New Password</label>
+                    <input asp-for="@Model.PasswordOne" type="password" class="form-control" placeholder="Enter New Password">
+                </div>
+                <div class="col-sm-6 form-group">
+                    <label>Confirm Password</label>
+                    <input asp-for="@Model.ConfirmPasswordOne" type="password" class="form-control" placeholder="Confirm Password">
+                </div>
+    @for (var i = 0; i < Model.Roles.Count; i++)
+    {
+        <div class="col-md-12" hidden>
+            @Html.CheckBoxFor(s=> Model.Roles[i].Selected )
+            @Html.HiddenFor(s=> Model.Roles[i].Value)
+            @Html.LabelFor(s=> Model.Roles[i].Selected, Model.Roles[i].Text, new {@class="form-check-label" })
+            @Html.HiddenFor(s=> Model.Roles[i].Text)
+        </div>
+    }
+    <span class="text-danger">@ViewBag.Message</span>
+    <br />
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary">Edit Profile</button>
+                    <a asp-controller="User" asp-action="EditProfile" asp-route-id="@Model.Id"class="btn btn-primary">Change Profile Picture</a>
+    </div>
+    </div>
+</form>
+</div>
+</section>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    }

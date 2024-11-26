@@ -1,0 +1,337 @@
+﻿@model iCare_ePrescribing_System.ViewModels.BookSurgeryVM
+
+@{
+    ViewData["Title"] = "Home Page";
+    Layout = "_SurgeonLayout";
+}
+@{
+    string special = "@gmail.com", special1 = "@outlook.com", special2 = "@mandela.ac.za", special3 = "@nompilo.co.za";
+    string name = User.Identity?.Name.ToString();
+
+
+    if (name.ToLowerInvariant().Contains(special))
+    {
+        name = name.Replace(special, " ");
+    }
+    else if (name.ToLowerInvariant().Contains(special1))
+    {
+        name = name.Replace(special1, " ");
+    }
+    else if (name.ToLowerInvariant().Contains(special2))
+    {
+        name = name.Replace(special2, " ");
+    }
+    else if (name.ToLowerInvariant().Contains(special3))
+    {
+        name = name.Replace(special3, " ");
+    }
+}
+<aside class="sidebar position-fixed top-0 left-0 overflow-auto h-100 float-left" id="show-side-navigation1">
+    <i class="uil-bars close-aside d-md-none d-lg-none" data-close="show-side-navigation1"></i>
+    <div class="sidebar-header d-flex justify-content-center align-items-center px-3 py-4">
+        <img class="rounded-pill img-fluid"
+             width="65"
+             src=""
+             alt="">
+        <div class="ms-2">
+            <h5 class="fs-6 mb-0">
+                <a class="text-decoration-none" href="#">@name</a>
+            </h5>
+
+        </div>
+    </div>
+
+    <div class="search position-relative text-center px-4 py-3 mt-2">
+        <input type="text" class="form-control w-100 border-0 bg-transparent" placeholder="Search here">
+        <i class="fa fa-search position-absolute d-block fs-6"></i>
+    </div>
+
+    <ul class="categories list-unstyled">
+        <li class="has-dropdown">
+            <i class="uil-estate fa-fw"></i><a asp-controller="Surgeon" asp-action="BookSurgery">&#128200;Book Surgery</a>
+            <ul class="sidebar-dropdown list-unstyled">
+                <li><a href="#">View Prescription</a></li>
+                
+            </ul>
+        </li>
+        @* <li>
+            <i class="uil-estate fa-fw"></i>
+            <a asp-controller="Surgeon" asp-action="ConfirmSurgery">&#128200;Confirm Surgery</a>
+        </li>
+        <li>
+            <i class="uil-estate fa-fw">
+
+            </i><a asp-controller="Surgeon" asp-action="ViewBookedPatients">&#128200; Booked Patients</a>
+        </li>
+ *@
+
+        <li class="has-dropdown">
+            <i class="uil-calendar-alt"></i><a asp-controller ="Surgeon" asp-action="LoadPrescription" > &#128138;Prescribe Medication</a>
+            <ul class="sidebar-dropdown list-unstyled">
+                
+            </ul>
+        </li>
+        <li class="has-dropdown">
+            <i class="uil-envelope-download fa-fw"></i><a href="#"> &#128202;Reports</a>
+            <ul class="sidebar-dropdown list-unstyled">
+                
+            </ul>
+        </li>
+        <li class="has-dropdown">
+            <i class="uil-envelope-download fa-fw"></i><a href="#"> &#128204;General</a>
+            <ul class="sidebar-dropdown list-unstyled">
+                
+            </ul>
+        </li>
+        <li class="has-dropdown">
+            <i class="uil-shopping-cart-alt"></i><a class="fas fa-sign-out-alt" href="#">Log Out</a>
+            <ul class="sidebar-dropdown list-unstyled">
+                
+            </ul>
+        </li>
+       
+    </ul>
+</aside>
+
+<section id="wrapper">
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Surgeon Dashboard</title>
+        <link rel="stylesheet" href="styles.css">
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 0;
+            }
+
+            header {
+                background-color: #255;
+                color: #fff;
+                padding: 10px 0;
+                text-align: center;
+            }
+
+            nav ul {
+                list-style-type: none;
+                margin: 0;
+                padding: 0;
+            }
+
+                nav ul li {
+                    display: inline;
+                    margin-right: 20px;
+                }
+
+                    nav ul li a {
+                        color: #fff;
+                        text-decoration: none;
+                    }
+
+            main {
+                padding: 20px;
+            }
+
+            h2 {
+                margin-bottom: 20px;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 20px;
+            }
+
+            th, td {
+                padding: 10px;
+                border: 1px solid #ccc;
+            }
+
+            th {
+                background-color: #255;
+                color: #fff;
+            }
+
+            tr:nth-child(even) {
+                background-color: #f2f2f2;
+            }
+
+            footer {
+                background-color: #255;
+                color: #fff;
+                text-align: center;
+                padding: 10px 0;
+                position: fixed;
+                bottom: 0;
+                width: 100%;
+            }
+
+            .search-container {
+                margin-bottom: 20px;
+            }
+
+                .search-container input[type=text] {
+                    width: 100%;
+                    padding: 10px;
+                    margin-bottom: 10px;
+                    box-sizing: border-box;
+                }
+        </style>
+    </head>
+    <body>
+        <header>
+            <h1>Surgeon Dashboard</h1>
+            <!-- Navigation links -->
+            <nav>
+                <ul>
+                    <li><a href="#search">Search Patient</a></li>
+                    <li><a href="#bookings">Bookings</a></li>
+                    <li>
+                        <i class="uil-estate fa-fw">
+
+                        </i><a asp-controller="Surgeon" asp-action="admitedPatientsList"> Admissions</a>
+                    </li>
+                    @* <li><a href="#patients">Admissions</a></li> *@
+                    <li><a href="#prescriptions">Prescriptions</a></li>
+                    <li><a href="#treament code">Treatment Code</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+
+            <h2>Book Surgery</h2>
+
+            @* <form asp-action="SearchPatientById" method="get">
+                <div class="form-group">
+                    <label for="patientIdNo">Search Patient by ID Number</label>
+                    <input type="text" name="patientIdNo" class="form-control" placeholder="Enter Id Number" />
+                </div>
+                <button type ="submit" class="btn btn-primary">Search</button>
+            </form> *@
+
+            @* @model iCare_ePrescribing_System.Models.BookSurgery *@
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success">
+                    @TempData["SuccessMessage"]
+                </div>
+            }
+
+
+            <form asp-action="BookSurgery" method= "post">
+               
+
+                <div class="form-group">
+                    <label asp-for="NewPatient.PatientId">Select Patient</label>
+                    <select asp-for="NewPatient.PatientId" asp-items="Model.Patients" class="form-control">
+                        @if (ViewBag.Patients != null && ViewBag.Patients.Count > 0)
+                        {
+                            @foreach (var patient in ViewBag.Patients)
+                            {
+                                <option value="@patient.Value">@patient.Text</option>
+                            }
+                        }
+                        else
+                        {
+                            <option>No patients available</option>
+                        }
+                    </select>
+
+
+                </div>
+
+                <div class="form-group">
+                    <label for="gender"> Gender </label>
+                    <select id="gender" name ="gender "class="form-control" required>
+                        <option value="Select">Select</option>
+                        <option value="Male">Male</option>
+                        <option value="Fenale">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="SurgeryDate">Surgery Date</label>
+                    <input asp-for="SurgeryDate" type="date" class="form-control" />
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Session"> Session</label>
+                    <select asp-for="Session" class="form-control">
+                        <option value="Select">Select</option>
+                        <option value="AM">AM</option>
+                        <option value="PM">PM</option>
+                    </select>
+                </div>
+
+                
+
+                <div class="form-group">
+                    <label asp-for="TheatreId"> Theatre</label>
+                    <select asp-for="TheatreId" class="form-control" required>@* asp-items="@(new SelectList(ViewBag.Theatres,"Id","TheatreName"))"></select> *@
+                        @if (ViewBag.Theatres != null && ViewBag.Theatres.Count > 0)
+                        {
+                            @foreach (var theatre in ViewBag.Theatres)
+                            {
+                                <option value="@theatre.Value">@theatre.Text</option>
+                            }
+                        }
+                        else
+                        {
+                            <option>No theatres available</option>
+                        }
+                    </select> 
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="TreatmentCode"> Treatment Codes</label>
+                    <select asp-for="TreatmentCode" class="form-control" >@* asp-items="@(new SelectList(ViewBag.TreatmentCodes,"Id","Code"))"multiple></select> *@
+                        @if (ViewBag.TreatmentCodes != null && ViewBag.TreatmentCodes.Count > 0)
+                        {
+                            @foreach (var treatmentCode in ViewBag.TreatmentCodes)
+                            {
+                                <option value="@treatmentCode.Value">@treatmentCode.Text</option> <!-- Use Value and Text here -->
+                            }
+                        }
+                        else
+                        {
+                            <option>No treatment codes available</option>
+                        }
+                        <!-- Populate with treatment codes from the database -->
+                    </select> 
+                </div>
+                <button type="submit" class="btn btn-primary"> Book Surgery </button>
+
+               
+
+                
+
+              
+               <a class="btn btn-primary" asp-action="AddPatient">Add New Patient</a>
+               @*  @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success">
+                        @TempData["SuccessMessage"]
+                    </div>
+                }
+ *@
+                
+            </form>
+
+
+
+        </main>
+        @* <footer>
+            <!-- Footer content -->
+            © 2024 Surgeon Dashboard. All rights reserved.iCare e-Presctibing.
+        </footer> *@
+    </body>
+</html>
+
+</section>
+
